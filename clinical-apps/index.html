@@ -490,7 +490,7 @@ Omit any field that is unclear.`;
       })
     });
     const data=await resp.json();
-    if(!resp.ok){status.textContent='⚠️ API Error '+resp.status+': '+JSON.stringify(data);btn.disabled=false;return;}
+    if(!resp.ok){const em=data&&data.error&&data.error.message?data.error.message:JSON.stringify(data);status.textContent='⚠️ '+resp.status+': '+em;btn.disabled=false;return;}
     const text=data.content.map(i=>i.text||'').join('').trim();
     let parsed;
     try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}
