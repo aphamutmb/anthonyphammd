@@ -475,9 +475,9 @@ Extract ALL of:
 - mrn (IKnowMed patient ID number)
 Respond ONLY with raw JSON. Example: {"name":"Smith, John","dob":"04/15/1962","mrn":"7654321"}
 Omit any field that is unclear.`;
+  let resp;
   try{
-    // ── Calls our Netlify proxy instead of Anthropic directly ──
-    const resp=await fetch('/api/claude-proxy',{
+    resp=await fetch('/api/claude-proxy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -503,7 +503,7 @@ Omit any field that is unclear.`;
     status.textContent='✓ Filled: '+filled.join(', ');
     setTimeout(()=>closeScanner(),1200);
   }catch(e){
-    status.textContent='⚠️ Error contacting AI. Check your connection and try again.';
+    status.textContent='⚠️ Error: '+e.message+' | HTTP: '+(resp ? resp.status : 'none');
     btn.disabled=false;
   }
 }
