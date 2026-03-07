@@ -4,36 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Physician Charge Submission</title>
-<link rel="apple-touch-icon" id="appIcon" href=""/>
+<link rel="apple-touch-icon" href="https://www.dropbox.com/scl/fi/pubosfj4hl6kufpe7uxsi/Photo-Mar-07-2026-8-35-12-AM.jpg?rlkey=8jg5sapf7i45cohvya7in6k65&st=1biefki7&raw=1"/>
 <meta name="apple-mobile-web-app-title" content="PhysicianCharge"/>
-<script>
-(function(){
-  var c=document.createElement('canvas');
-  c.width=180;c.height=180;
-  var ctx=c.getContext('2d');
-  // Burnt orange background
-  ctx.fillStyle='#b5451b';
-  ctx.fillRect(0,0,180,180);
-  // Draw compass dot-circle logo
-  var cx=90,cy=90,radius=62;
-  var dots=[
-    {a:0,r:7},{a:22,r:5.5},{a:44,r:4.5},{a:64,r:3.5},{a:80,r:3},
-    {a:100,r:3},{a:116,r:3.5},{a:136,r:4.5},{a:158,r:5.5},{a:180,r:7},
-    {a:202,r:5.5},{a:224,r:4.5},{a:244,r:3.5},{a:260,r:3},
-    {a:280,r:3},{a:296,r:3.5},{a:316,r:4.5},{a:338,r:5.5}
-  ];
-  ctx.fillStyle='#ffffff';
-  dots.forEach(function(d){
-    var angle=d.a*Math.PI/180;
-    var x=cx+radius*Math.cos(angle);
-    var y=cy+radius*Math.sin(angle);
-    ctx.beginPath();
-    ctx.arc(x,y,d.r,0,2*Math.PI);
-    ctx.fill();
-  });
-  document.getElementById('appIcon').href=c.toDataURL('image/png');
-})();
-</script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:#fdf6f0;color:#1a1a1a;min-height:100vh}
