@@ -75,7 +75,7 @@
   .modal-sub{color:#f0c4aa;font-size:.8rem;margin-bottom:14px;text-align:center;line-height:1.5}
   #videoEl{width:100%;max-width:500px;border-radius:12px;border:2px solid #b5451b}
   .ocr-frame{position:relative;width:100%;max-width:500px}
-  .ocr-overlay-epic{position:absolute;top:5%;left:3%;width:42%;height:88%;border:2px dashed rgba(255,181,100,.8);border-radius:6px;pointer-events:none}
+  .ocr-overlay-epic{position:absolute;top:5%;left:3%;width:42%;height:35%;border:2px dashed rgba(255,181,100,.8);border-radius:6px;pointer-events:none}
   .ocr-overlay-iknowmed{position:absolute;top:15%;left:5%;width:90%;height:30%;border:2px dashed rgba(255,181,100,.8);border-radius:6px;pointer-events:none}
   .ocr-label{position:absolute;background:rgba(181,69,27,.8);color:#fff;font-size:.72rem;padding:3px 10px;border-radius:20px;white-space:nowrap}
   .ocr-label-epic{top:2%;left:3%}
@@ -465,9 +465,9 @@ async function captureAndRead(){
   const vh=video.videoHeight||480;
   let sx,sy,sw,sh;
   if(_scanMode==='epic'){
-    // .ocr-overlay-epic: left 3%, top 5%, width 42%, height 88%
+    // .ocr-overlay-epic: left 3%, top 5%, width 42%, height 35%
     sx=Math.round(vw*0.03); sy=Math.round(vh*0.05);
-    sw=Math.round(vw*0.42); sh=Math.round(vh*0.88);
+    sw=Math.round(vw*0.42); sh=Math.round(vh*0.35);
   } else {
     // .ocr-overlay-iknowmed: left 5%, top 15%, width 90%, height 30%
     sx=Math.round(vw*0.05); sy=Math.round(vh*0.15);
