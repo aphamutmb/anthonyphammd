@@ -84,7 +84,7 @@
   .capture-btn{flex:1;padding:13px;background:#b5451b;color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:inherit}
   .capture-btn:disabled{background:#666;cursor:not-allowed}
   .cancel-btn{padding:13px 20px;background:transparent;color:#fff;border:2px solid rgba(255,255,255,.3);border-radius:10px;font-size:.95rem;cursor:pointer;font-family:inherit}
-  .ocr-status{color:#f0c4aa;font-size:.8rem;margin-top:10px;text-align:center;min-height:20px}
+  .ocr-status{color:#f0c4aa;font-size:.75rem;margin-top:10px;text-align:center;min-height:20px;max-height:80px;overflow-y:auto;word-break:break-all;padding:0 4px}
   canvas{display:none}
   @media(max-width:480px){.form-row.two{grid-template-columns:1fr}.billing-grid{grid-template-columns:1fr}}
 </style>
@@ -504,6 +504,8 @@ async function captureAndRead(){
       })
     });
     const data=await resp.json();
+    if(data.error){status.textContent='⚠️ API: '+data.error.type+' — '+data.error.message;btn.disabled=false;return;}
+    if(!resp.ok){status.textContent='⚠️ HTTP '+resp.status+': '+JSON.stringify(data);btn.disabled=false;return;}
     const text=data.content.map(i=>i.text||'').join('').trim();
     let parsed;
     try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}
@@ -517,7 +519,7 @@ async function captureAndRead(){
     status.textContent='✓ Filled: '+filled.join(', ');
     setTimeout(()=>closeScanner(),1200);
   }catch(e){
-    status.textContent='⚠️ Error contacting AI. Check your connection and try again.';
+    status.textContent='⚠️ Fetch failed: '+(e.message||String(e));
     btn.disabled=false;
   }
 }
