@@ -486,7 +486,7 @@ async function captureAndRead(){
     :`IKnowMed G2 header crop. Extract name (Last, First), dob (MM/DD/YYYY), mrn (numeric ID). JSON only: {"name":"...","dob":"...","mrn":"..."}. Omit unclear fields.`;
 
   try{
-    const resp=await fetch('/api/claude-proxy',{
+    const resp=await fetch('/.netlify/functions/claude-proxy',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
