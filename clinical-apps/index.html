@@ -108,7 +108,7 @@
 
 <!-- OCR Modal -->
 <div class="modal-overlay hidden" id="ocrModal">
-  <div class="modal-header" id="modalHeader">Point at Epic Patient Storyboard</div>
+  <div class="modal-header" id="modalHeader">Point at Epic Patient Header</div>
   <div class="modal-sub" id="modalSub">Align the patient's name and DOB within the highlighted area</div>
   <div class="ocr-frame">
     <video id="videoEl" autoplay playsinline muted></video>
@@ -274,7 +274,9 @@ function addRecentPatient(idx){
     const facEl=document.getElementById('pfac-'+id);
     if(facEl && p.facility){
       for(let i=0;i<facEl.options.length;i++){
-        if(facEl.options[i].value===p.facility){facEl.selectedIndex=i;break;}
+        if(facEl.options[i].value===p.facility){
+          facEl.selectedIndex=i; break;
+        }
       }
     }
     if(p.codeCodes && p.codeCodes.length){
@@ -455,34 +457,41 @@ async function captureAndRead(){
   const status=document.getElementById('ocrStatus');
   btn.disabled=true;
   status.textContent='📸 Capturing…';
-  canvas.width=video.videoWidth||640;
-  canvas.height=video.videoHeight||480;
-  canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
-  const base64=canvas.toDataURL('image/jpeg',.85).split(',')[1];
+
+  // ── Crop to the overlay region ────────────────────────────────
+  // Overlay dimensions are defined in CSS as percentages of the video element.
+  // We map those percentages onto the actual video pixel dimensions.
+  const vw=video.videoWidth||640;
+  const vh=video.videoHeight||480;
+  let sx,sy,sw,sh;
+  if(_scanMode==='epic'){
+    // .ocr-overlay-epic: left 3%, top 5%, width 42%, height 88%
+    sx=Math.round(vw*0.03); sy=Math.round(vh*0.05);
+    sw=Math.round(vw*0.42); sh=Math.round(vh*0.88);
+  } else {
+    // .ocr-overlay-iknowmed: left 5%, top 15%, width 90%, height 30%
+    sx=Math.round(vw*0.05); sy=Math.round(vh*0.15);
+    sw=Math.round(vw*0.90); sh=Math.round(vh*0.30);
+  }
+  canvas.width=sw;
+  canvas.height=sh;
+  canvas.getContext('2d').drawImage(video, sx, sy, sw, sh, 0, 0, sw, sh);
+
+  // JPEG quality 0.65 — sufficient for printed EMR text, meaningfully smaller payload
+  const base64=canvas.toDataURL('image/jpeg', 0.65).split(',')[1];
   status.textContent='🔍 Reading patient info…';
+
   const prompt=_scanMode==='epic'
-    ?`This is a screenshot of an Epic EMR screen. The patient demographic information is in the Storyboard panel — a tall, narrow, boxy section on the LEFT side of the screen with patient name, DOB, age stacked vertically.
-Extract ONLY:
-- name (Last, First format)
-- dob (MM/DD/YYYY format)
-Do NOT include any MRN or numeric ID.
-Respond ONLY with raw JSON. Example: {"name":"Smith, John","dob":"04/15/1962"}
-Omit any field that is unclear.`
-    :`This is a screenshot of an IKnowMed G2 EMR patient header — a horizontal banner at the top.
-Extract ALL of:
-- name (Last, First format)
-- dob (MM/DD/YYYY format)
-- mrn (IKnowMed patient ID number)
-Respond ONLY with raw JSON. Example: {"name":"Smith, John","dob":"04/15/1962","mrn":"7654321"}
-Omit any field that is unclear.`;
-  let resp;
+    ?`Epic EMR Storyboard crop. Extract name (Last, First) and dob (MM/DD/YYYY). JSON only: {"name":"...","dob":"..."}. Omit unclear fields.`
+    :`IKnowMed G2 header crop. Extract name (Last, First), dob (MM/DD/YYYY), mrn (numeric ID). JSON only: {"name":"...","dob":"...","mrn":"..."}. Omit unclear fields.`;
+
   try{
-    resp=await fetch('/api/claude-proxy',{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-haiku-4-5-20251001',
-        max_tokens:300,
+        model:'claude-sonnet-4-20250514',
+        max_tokens:80,
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},
           {type:'text',text:prompt}
@@ -490,7 +499,6 @@ Omit any field that is unclear.`;
       })
     });
     const data=await resp.json();
-    if(!resp.ok){const em=data&&data.error&&data.error.message?data.error.message:JSON.stringify(data);status.textContent='⚠️ '+resp.status+': '+em;btn.disabled=false;return;}
     const text=data.content.map(i=>i.text||'').join('').trim();
     let parsed;
     try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}
@@ -504,7 +512,7 @@ Omit any field that is unclear.`;
     status.textContent='✓ Filled: '+filled.join(', ');
     setTimeout(()=>closeScanner(),1200);
   }catch(e){
-    status.textContent='⚠️ Error: '+e.message+' | HTTP: '+(resp ? resp.status : 'none');
+    status.textContent='⚠️ Error contacting AI. Check your connection and try again.';
     btn.disabled=false;
   }
 }
