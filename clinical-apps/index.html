@@ -350,6 +350,7 @@ function renderPatients(){
         '</select></div>'+
         '<div><label>MRN <span style="color:#c0a090;font-weight:400">(optional)</span></label><input type="text" id="pmrn-'+id+'" placeholder="IKnowMed MRN"/></div>'+
       '</div>'+
+      '<div style="margin-bottom:12px"><label>Diagnoses</label><textarea id="pdiag-'+id+'" placeholder="Enter diagnoses…" style="width:100%;padding:9px 12px;border:1.5px solid #e8c9b5;border-radius:8px;font-size:.88rem;font-family:inherit;color:#1a1a1a;background:#fff;resize:vertical;min-height:70px;transition:border .2s"></textarea></div>'+
       '<div><label>Billing Codes *</label>'+
         '<div class="billing-grid" id="codes-'+id+'">'+
           CPT_CODES.map(c=>
@@ -547,7 +548,7 @@ function validate(){
 function buildBody(physician,dos,pdata){
   let b='PHYSICIAN CHARGE SUBMISSION\n'+'='.repeat(40)+'\nPhysician: '+physician+'\nDate of Service: '+dos+'\nSubmitted: '+new Date().toLocaleString()+'\n'+'='.repeat(40)+'\n\n';
   pdata.forEach((p,i)=>{
-    b+='PATIENT '+(i+1)+'\n'+'-'.repeat(30)+'\nName:       '+p.name+'\nDOB:        '+p.dob+'\nFacility:   '+p.facility+'\nMRN:        '+(p.mrn||'N/A')+'\nCPT Codes:\n';
+    b+='PATIENT '+(i+1)+'\n'+'-'.repeat(30)+'\nName:       '+p.name+'\nDOB:        '+p.dob+'\nFacility:   '+p.facility+'\nMRN:        '+(p.mrn||'N/A')+'\nDiagnoses:  '+(p.diagnoses||'N/A')+'\nCPT Codes:\n';
     p.codes.forEach(c=>{b+='  • '+c+'\n';});
     b+='\n';
   });
@@ -564,6 +565,7 @@ async function submitCharges(){
     dob:getDobValue(id),
     facility:(document.getElementById('pfac-'+id)||{value:''}).value,
     mrn:(document.getElementById('pmrn-'+id)||{value:''}).value.trim(),
+    diagnoses:(document.getElementById('pdiag-'+id)||{value:''}).value.trim(),
     codes:getSelectedCodes(id),
     codeCodes:getSelectedCodeCodes(id),
     savedAt:Date.now(),
