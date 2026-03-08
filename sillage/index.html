@@ -22,466 +22,198 @@
   <div id="root"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
-  <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+  <script>
+    "use strict";
+    var h = React.createElement;
+    var useState = React.useState, useEffect = React.useEffect, useRef = React.useRef;
 
-    const SPRITE_FRAMES = [
-      `<svg width="48" height="64" viewBox="0 0 48 64" xmlns="http://www.w3.org/2000/svg">
-        <rect x="14" y="4" width="20" height="4" fill="#1a3a6b"/><rect x="10" y="8" width="28" height="2" fill="#1a3a6b"/>
-        <rect x="14" y="10" width="20" height="14" fill="#f5c89a"/><rect x="17" y="14" width="4" height="4" fill="#0a0a1e"/>
-        <rect x="27" y="14" width="4" height="4" fill="#0a0a1e"/><rect x="10" y="14" width="4" height="6" fill="#f5c89a"/>
-        <rect x="34" y="14" width="4" height="6" fill="#f5c89a"/><rect x="8" y="12" width="4" height="4" fill="#f5c89a"/>
-        <rect x="36" y="12" width="4" height="4" fill="#f5c89a"/><rect x="12" y="24" width="24" height="20" fill="#1e56a0"/>
-        <rect x="12" y="40" width="24" height="4" fill="#0d2b6b"/><rect x="6" y="24" width="8" height="16" fill="#1e56a0"/>
-        <rect x="34" y="24" width="8" height="14" fill="#1e56a0"/><rect x="4" y="38" width="8" height="6" fill="#f5c89a"/>
-        <rect x="34" y="36" width="8" height="6" fill="#f5c89a"/><rect x="14" y="44" width="10" height="14" fill="#0d2b6b"/>
-        <rect x="24" y="44" width="10" height="14" fill="#0d2b6b"/><rect x="12" y="56" width="12" height="6" fill="#071540"/>
-        <rect x="24" y="56" width="12" height="6" fill="#071540"/><rect x="38" y="28" width="8" height="12" fill="#3a9bd5" opacity="0.9"/>
-        <rect x="40" y="24" width="4" height="6" fill="#7f8c8d"/><rect x="39" y="22" width="6" height="4" fill="#95a5a6"/>
-        <rect x="36" y="26" width="12" height="16" fill="#3a9bd5" opacity="0.25"/>
-      </svg>`,
-      `<svg width="48" height="64" viewBox="0 0 48 64" xmlns="http://www.w3.org/2000/svg">
-        <rect x="14" y="4" width="20" height="4" fill="#1a3a6b"/><rect x="10" y="8" width="28" height="2" fill="#1a3a6b"/>
-        <rect x="14" y="10" width="20" height="14" fill="#f5c89a"/><rect x="17" y="14" width="4" height="4" fill="#0a0a1e"/>
-        <rect x="27" y="14" width="4" height="4" fill="#0a0a1e"/><rect x="10" y="14" width="4" height="6" fill="#f5c89a"/>
-        <rect x="34" y="14" width="4" height="6" fill="#f5c89a"/><rect x="8" y="12" width="4" height="4" fill="#f5c89a"/>
-        <rect x="36" y="12" width="4" height="4" fill="#f5c89a"/><rect x="12" y="24" width="24" height="20" fill="#1e56a0"/>
-        <rect x="12" y="40" width="24" height="4" fill="#0d2b6b"/><rect x="6" y="26" width="8" height="14" fill="#1e56a0"/>
-        <rect x="34" y="22" width="8" height="16" fill="#1e56a0"/><rect x="4" y="38" width="8" height="6" fill="#f5c89a"/>
-        <rect x="34" y="36" width="8" height="6" fill="#f5c89a"/><rect x="14" y="44" width="10" height="16" fill="#0d2b6b"/>
-        <rect x="24" y="44" width="10" height="12" fill="#0d2b6b"/><rect x="10" y="58" width="14" height="6" fill="#071540"/>
-        <rect x="24" y="54" width="12" height="6" fill="#071540"/><rect x="38" y="24" width="8" height="12" fill="#3a9bd5" opacity="0.9"/>
-        <rect x="40" y="20" width="4" height="6" fill="#7f8c8d"/><rect x="39" y="18" width="6" height="4" fill="#95a5a6"/>
-        <rect x="36" y="22" width="12" height="16" fill="#3a9bd5" opacity="0.25"/>
-      </svg>`
+    var API_URL = "/.netlify/functions/claude-proxy";
+
+    var SPRITE_FRAMES = [
+      '<svg width="48" height="64" viewBox="0 0 48 64" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="4" width="20" height="4" fill="#1a3a6b"/><rect x="10" y="8" width="28" height="2" fill="#1a3a6b"/><rect x="14" y="10" width="20" height="14" fill="#f5c89a"/><rect x="17" y="14" width="4" height="4" fill="#0a0a1e"/><rect x="27" y="14" width="4" height="4" fill="#0a0a1e"/><rect x="10" y="14" width="4" height="6" fill="#f5c89a"/><rect x="34" y="14" width="4" height="6" fill="#f5c89a"/><rect x="8" y="12" width="4" height="4" fill="#f5c89a"/><rect x="36" y="12" width="4" height="4" fill="#f5c89a"/><rect x="12" y="24" width="24" height="20" fill="#1e56a0"/><rect x="12" y="40" width="24" height="4" fill="#0d2b6b"/><rect x="6" y="24" width="8" height="16" fill="#1e56a0"/><rect x="34" y="24" width="8" height="14" fill="#1e56a0"/><rect x="4" y="38" width="8" height="6" fill="#f5c89a"/><rect x="34" y="36" width="8" height="6" fill="#f5c89a"/><rect x="14" y="44" width="10" height="14" fill="#0d2b6b"/><rect x="24" y="44" width="10" height="14" fill="#0d2b6b"/><rect x="12" y="56" width="12" height="6" fill="#071540"/><rect x="24" y="56" width="12" height="6" fill="#071540"/><rect x="38" y="28" width="8" height="12" fill="#3a9bd5" opacity="0.9"/><rect x="40" y="24" width="4" height="6" fill="#7f8c8d"/><rect x="39" y="22" width="6" height="4" fill="#95a5a6"/><rect x="36" y="26" width="12" height="16" fill="#3a9bd5" opacity="0.25"/></svg>',
+      '<svg width="48" height="64" viewBox="0 0 48 64" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="4" width="20" height="4" fill="#1a3a6b"/><rect x="10" y="8" width="28" height="2" fill="#1a3a6b"/><rect x="14" y="10" width="20" height="14" fill="#f5c89a"/><rect x="17" y="14" width="4" height="4" fill="#0a0a1e"/><rect x="27" y="14" width="4" height="4" fill="#0a0a1e"/><rect x="10" y="14" width="4" height="6" fill="#f5c89a"/><rect x="34" y="14" width="4" height="6" fill="#f5c89a"/><rect x="8" y="12" width="4" height="4" fill="#f5c89a"/><rect x="36" y="12" width="4" height="4" fill="#f5c89a"/><rect x="12" y="24" width="24" height="20" fill="#1e56a0"/><rect x="12" y="40" width="24" height="4" fill="#0d2b6b"/><rect x="6" y="26" width="8" height="14" fill="#1e56a0"/><rect x="34" y="22" width="8" height="16" fill="#1e56a0"/><rect x="4" y="38" width="8" height="6" fill="#f5c89a"/><rect x="34" y="36" width="8" height="6" fill="#f5c89a"/><rect x="14" y="44" width="10" height="16" fill="#0d2b6b"/><rect x="24" y="44" width="10" height="12" fill="#0d2b6b"/><rect x="10" y="58" width="14" height="6" fill="#071540"/><rect x="24" y="54" width="12" height="6" fill="#071540"/><rect x="38" y="24" width="8" height="12" fill="#3a9bd5" opacity="0.9"/><rect x="40" y="20" width="4" height="6" fill="#7f8c8d"/><rect x="39" y="18" width="6" height="4" fill="#95a5a6"/><rect x="36" y="22" width="12" height="16" fill="#3a9bd5" opacity="0.25"/></svg>'
     ];
 
-    function WispParticles({ x, y, facing }) {
-      const [particles, setParticles] = useState([]);
-      const posRef = useRef({ x, y, facing });
-      const colors = useRef(["#3a9bd5","#1e56a0","#63d4f5","#2980b9","#a8d8f0","#1abc9c"]);
-
-      useEffect(() => {
-        posRef.current = { x, y, facing };
-      }, [x, y, facing]);
-
-      useEffect(() => {
-        const spawnIv = setInterval(() => {
-          const { x: cx, y: cy, facing: cf } = posRef.current;
-          const c = colors.current;
-          setParticles(p => [
-            ...p.slice(-20),
-            {
-              id: Date.now() + Math.random(),
-              x: cf === 1 ? cx - 10 : cx + 58,
-              y: cy + 30 + (Math.random() - 0.5) * 20,
-              color: c[Math.floor(Math.random() * c.length)],
-              life: 1,
-              vx: cf === 1 ? -(Math.random() * 2 + 1) : (Math.random() * 2 + 1),
-              vy: (Math.random() - 0.5) * 2,
-              size: Math.random() * 6 + 3
-            }
-          ]);
+    function WispParticles(props) {
+      var _ps = useState([]), particles = _ps[0], setParticles = _ps[1];
+      var posRef = useRef({ x: props.x, y: props.y, facing: props.facing });
+      var colors = useRef(["#3a9bd5","#1e56a0","#63d4f5","#2980b9","#a8d8f0","#1abc9c"]);
+      useEffect(function() { posRef.current = { x: props.x, y: props.y, facing: props.facing }; }, [props.x, props.y, props.facing]);
+      useEffect(function() {
+        var spawnIv = setInterval(function() {
+          var p = posRef.current, c = colors.current;
+          setParticles(function(prev) { return prev.slice(-20).concat([{ id: Date.now() + Math.random(), x: p.facing === 1 ? p.x - 10 : p.x + 58, y: p.y + 30 + (Math.random() - 0.5) * 20, color: c[Math.floor(Math.random() * c.length)], life: 1, vx: p.facing === 1 ? -(Math.random() * 2 + 1) : (Math.random() * 2 + 1), vy: (Math.random() - 0.5) * 2, size: Math.random() * 6 + 3 }]); });
         }, 60);
-
-        const updateIv = setInterval(() => {
-          setParticles(p =>
-            p.map(q => ({ ...q, life: q.life - 0.05, x: q.x + q.vx, y: q.y + q.vy }))
-             .filter(q => q.life > 0)
-          );
+        var updateIv = setInterval(function() {
+          setParticles(function(prev) { return prev.map(function(q) { return Object.assign({}, q, { life: q.life - 0.05, x: q.x + q.vx, y: q.y + q.vy }); }).filter(function(q) { return q.life > 0; }); });
         }, 50);
-
-        return () => { clearInterval(spawnIv); clearInterval(updateIv); };
+        return function() { clearInterval(spawnIv); clearInterval(updateIv); };
       }, []);
-
-      return (
-        <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 50 }}>
-          {particles.map(p => (
-            <div key={p.id} style={{
-              position: "absolute", left: p.x, top: p.y, width: p.size, height: p.size,
-              borderRadius: "50%", background: p.color, opacity: p.life * 0.8,
-              boxShadow: `0 0 ${p.size * 2}px ${p.color}`, pointerEvents: "none"
-            }} />
-          ))}
-        </div>
+      return h("div", { style: { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 50 } },
+        particles.map(function(p) { return h("div", { key: p.id, style: { position: "absolute", left: p.x, top: p.y, width: p.size, height: p.size, borderRadius: "50%", background: p.color, opacity: p.life * 0.8, boxShadow: "0 0 " + (p.size * 2) + "px " + p.color, pointerEvents: "none" } }); })
       );
     }
 
     function PixelSprite() {
-      const [x, setX] = useState(60);
-      const [frame, setFrame] = useState(0);
-      const [facing, setFacing] = useState(1);
-      const [winH, setWinH] = useState(window.innerHeight);
-      const dirRef = useRef(1);
-      const xRef = useRef(60);
-
-      useEffect(() => {
-        const onResize = () => setWinH(window.innerHeight);
-        window.addEventListener("resize", onResize);
-        return () => window.removeEventListener("resize", onResize);
+      var _x = useState(60), x = _x[0], setX = _x[1];
+      var _f = useState(0), frame = _f[0], setFrame = _f[1];
+      var _fc = useState(1), facing = _fc[0], setFacing = _fc[1];
+      var _wh = useState(window.innerHeight), winH = _wh[0], setWinH = _wh[1];
+      var dirRef = useRef(1), xRef = useRef(60);
+      useEffect(function() { var fn = function() { setWinH(window.innerHeight); }; window.addEventListener("resize", fn); return function() { window.removeEventListener("resize", fn); }; }, []);
+      useEffect(function() {
+        var iv = setInterval(function() { xRef.current += dirRef.current * 2.5; if (xRef.current > window.innerWidth - 100) { dirRef.current = -1; setFacing(-1); } if (xRef.current < 20) { dirRef.current = 1; setFacing(1); } setX(xRef.current); setFrame(function(f) { return (f + 1) % 2; }); }, 120);
+        return function() { clearInterval(iv); };
       }, []);
-
-      useEffect(() => {
-        const iv = setInterval(() => {
-          xRef.current += dirRef.current * 2.5;
-          if (xRef.current > window.innerWidth - 100) { dirRef.current = -1; setFacing(-1); }
-          if (xRef.current < 20) { dirRef.current = 1; setFacing(1); }
-          setX(xRef.current);
-          setFrame(f => (f + 1) % 2);
-        }, 120);
-        return () => clearInterval(iv);
-      }, []);
-
-      return (
-        <>
-          <WispParticles x={x} y={winH - 120} facing={facing} />
-          <div style={{
-            position: "fixed", bottom: 40, left: x,
-            transform: facing === -1 ? "scaleX(-1)" : "scaleX(1)",
-            zIndex: 51, imageRendering: "pixelated",
-            filter: "drop-shadow(0 0 8px rgba(58,155,213,0.9))", transition: "none"
-          }} dangerouslySetInnerHTML={{ __html: SPRITE_FRAMES[frame] }} />
-        </>
-      );
+      return h(React.Fragment, null, h(WispParticles, { x: x, y: winH - 120, facing: facing }), h("div", { style: { position: "fixed", bottom: 40, left: x, transform: facing === -1 ? "scaleX(-1)" : "scaleX(1)", zIndex: 51, imageRendering: "pixelated", filter: "drop-shadow(0 0 8px rgba(58,155,213,0.9))", transition: "none" }, dangerouslySetInnerHTML: { __html: SPRITE_FRAMES[frame] } }));
     }
 
-    function DiagonalReveal({ onComplete }) {
-      const [phase, setPhase] = useState(0);
-      useEffect(() => {
-        const t1 = setTimeout(() => setPhase(1), 100);
-        const t2 = setTimeout(() => { setPhase(2); onComplete(); }, 1800);
-        return () => { clearTimeout(t1); clearTimeout(t2); };
-      }, []);
+    function DiagonalReveal(props) {
+      var _p = useState(0), phase = _p[0], setPhase = _p[1];
+      useEffect(function() { var t1 = setTimeout(function() { setPhase(1); }, 100); var t2 = setTimeout(function() { setPhase(2); props.onComplete(); }, 1800); return function() { clearTimeout(t1); clearTimeout(t2); }; }, []);
       if (phase === 2) return null;
-      return (
-        <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 100, pointerEvents: "none", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: 0, left: 0, width: "60%", height: "60%", background: "#04080f", clipPath: "polygon(0 0,100% 0,0 100%)", transform: phase === 1 ? "translate(-120%,-120%)" : "translate(0,0)", transition: phase === 1 ? "transform 1.4s cubic-bezier(0.77,0,0.18,1)" : "none" }} />
-          <div style={{ position: "absolute", bottom: 0, right: 0, width: "60%", height: "60%", background: "#04080f", clipPath: "polygon(100% 100%,0 100%,100% 0)", transform: phase === 1 ? "translate(120%,120%)" : "translate(0,0)", transition: phase === 1 ? "transform 1.4s cubic-bezier(0.77,0,0.18,1)" : "none" }} />
-          <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "#04080f", clipPath: "polygon(40% 0,60% 0,100% 40%,100% 60%,60% 100%,40% 100%,0 60%,0 40%)", opacity: phase === 1 ? 0 : 1, transition: phase === 1 ? "opacity 0.8s ease 0.3s" : "none" }} />
-        </div>
+      return h("div", { style: { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 100, pointerEvents: "none", overflow: "hidden" } },
+        h("div", { style: { position: "absolute", top: 0, left: 0, width: "60%", height: "60%", background: "#04080f", clipPath: "polygon(0 0,100% 0,0 100%)", transform: phase === 1 ? "translate(-120%,-120%)" : "translate(0,0)", transition: phase === 1 ? "transform 1.4s cubic-bezier(0.77,0,0.18,1)" : "none" } }),
+        h("div", { style: { position: "absolute", bottom: 0, right: 0, width: "60%", height: "60%", background: "#04080f", clipPath: "polygon(100% 100%,0 100%,100% 0)", transform: phase === 1 ? "translate(120%,120%)" : "translate(0,0)", transition: phase === 1 ? "transform 1.4s cubic-bezier(0.77,0,0.18,1)" : "none" } }),
+        h("div", { style: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "#04080f", clipPath: "polygon(40% 0,60% 0,100% 40%,100% 60%,60% 100%,40% 100%,0 60%,0 40%)", opacity: phase === 1 ? 0 : 1, transition: phase === 1 ? "opacity 0.8s ease 0.3s" : "none" } })
       );
     }
 
-    function NotesChart({ notes }) {
-      const rows = [
-        { label: "Top Notes", icon: "✦", data: notes?.top, color: "#7ecfee" },
-        { label: "Mid Notes", icon: "❋", data: notes?.mid, color: "#4a90d9" },
-        { label: "Base Notes", icon: "◈", data: notes?.base, color: "#2558a8" }
-      ];
-      return (
-        <div style={{ border: "1px solid rgba(58,155,213,0.3)", borderRadius: 12, overflow: "hidden", marginTop: 16 }}>
-          {rows.map((r, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 20px", background: i % 2 === 0 ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.2)", borderBottom: i < 2 ? "1px solid rgba(58,155,213,0.15)" : "none" }}>
-              <span style={{ color: r.color, fontSize: 18, width: 20, textAlign: "center" }}>{r.icon}</span>
-              <span style={{ color: r.color, fontWeight: 700, width: 90, fontSize: 13, letterSpacing: 1, textTransform: "uppercase" }}>{r.label}</span>
-              <span style={{ color: "#c8dff5", fontSize: 14, flex: 1 }}>{r.data || "..."}</span>
-            </div>
-          ))}
-        </div>
+    function NotesChart(props) {
+      var notes = props.notes;
+      var rows = [{ label: "Top Notes", icon: "\u2726", data: notes && notes.top, color: "#7ecfee" }, { label: "Mid Notes", icon: "\u274B", data: notes && notes.mid, color: "#4a90d9" }, { label: "Base Notes", icon: "\u25C8", data: notes && notes.base, color: "#2558a8" }];
+      return h("div", { style: { border: "1px solid rgba(58,155,213,0.3)", borderRadius: 12, overflow: "hidden", marginTop: 16 } },
+        rows.map(function(r, i) { return h("div", { key: i, style: { display: "flex", alignItems: "center", gap: 16, padding: "14px 20px", background: i % 2 === 0 ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.2)", borderBottom: i < 2 ? "1px solid rgba(58,155,213,0.15)" : "none" } }, h("span", { style: { color: r.color, fontSize: 18, width: 20, textAlign: "center" } }, r.icon), h("span", { style: { color: r.color, fontWeight: 700, width: 90, fontSize: 13, letterSpacing: 1, textTransform: "uppercase" } }, r.label), h("span", { style: { color: "#c8dff5", fontSize: 14, flex: 1 } }, r.data || "...")); })
       );
     }
 
-    function Section({ title, icon, children }) {
-      return (
-        <div style={{ marginTop: 28, padding: "24px 28px", background: "rgba(10,30,60,0.5)", border: "1px solid rgba(58,155,213,0.2)", borderRadius: 14, animation: "fadeSlideUp 0.5s ease both" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <span style={{ fontSize: 20 }}>{icon}</span>
-            <h3 style={{ margin: 0, color: "#7ecfee", fontSize: 15, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>{title}</h3>
-          </div>
-          {children}
-        </div>
+    function Section(props) {
+      return h("div", { style: { marginTop: 28, padding: "24px 28px", background: "rgba(10,30,60,0.5)", border: "1px solid rgba(58,155,213,0.2)", borderRadius: 14, animation: "fadeSlideUp 0.5s ease both" } },
+        h("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 14 } }, h("span", { style: { fontSize: 20 } }, props.icon), h("h3", { style: { margin: 0, color: "#7ecfee", fontSize: 15, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 } }, props.title)),
+        props.children
       );
     }
 
-    function StatusBadge({ status, label }) {
-      const colors = { pending: "#4a6080", active: "#3a9bd5", done: "#1abc9c", error: "#e74c3c" };
-      const icons = { pending: "○", active: "◌", done: "✓", error: "✗" };
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 6, background: status === "active" ? "rgba(58,155,213,0.15)" : "rgba(10,30,60,0.4)", border: `1px solid ${colors[status]}40`, marginBottom: 6 }}>
-          <span style={{ color: colors[status], fontSize: 13 }}>{icons[status]}</span>
-          <span style={{ color: colors[status], fontSize: 12, letterSpacing: 1 }}>{label}</span>
-        </div>
-      );
+    function StatusBadge(props) {
+      var cs = { pending: "#4a6080", active: "#3a9bd5", done: "#1abc9c", error: "#e74c3c" };
+      var ic = { pending: "\u25CB", active: "\u25CC", done: "\u2713", error: "\u2717" };
+      return h("div", { style: { display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 6, background: props.status === "active" ? "rgba(58,155,213,0.15)" : "rgba(10,30,60,0.4)", border: "1px solid " + cs[props.status] + "40", marginBottom: 6 } }, h("span", { style: { color: cs[props.status], fontSize: 13 } }, ic[props.status]), h("span", { style: { color: cs[props.status], fontSize: 12, letterSpacing: 1 } }, props.label));
     }
 
-    function LandmarkImage({ name, country }) {
-      const [errored, setErrored] = useState(false);
-      const seed = encodeURIComponent((name || "landmark").slice(0, 30));
-      const src = `https://picsum.photos/seed/${seed}/400/250`;
-      return (
-        <img
-          src={src}
-          alt={name}
-          style={{
-            width: "100%", maxWidth: 360, borderRadius: 10, objectFit: "cover",
-            border: "1px solid rgba(58,155,213,0.3)",
-            minHeight: 180, background: "rgba(10,30,60,0.6)"
-          }}
-          onError={e => {
-            if (!errored) {
-              setErrored(true);
-              e.target.src = `https://picsum.photos/seed/${Date.now()}/400/250`;
-            }
-          }}
-        />
-      );
+    function LandmarkImage(props) {
+      var _e = useState(false), errored = _e[0], setErrored = _e[1];
+      var seed = encodeURIComponent((props.name || "landmark").slice(0, 30));
+      return h("img", { src: "https://picsum.photos/seed/" + seed + "/400/250", alt: props.name, style: { width: "100%", maxWidth: 360, borderRadius: 10, objectFit: "cover", border: "1px solid rgba(58,155,213,0.3)", minHeight: 180, background: "rgba(10,30,60,0.6)" }, onError: function(e) { if (!errored) { setErrored(true); e.target.src = "https://picsum.photos/seed/" + Date.now() + "/400/250"; } } });
     }
 
     function App() {
-      const [revealed, setRevealed] = useState(false);
-      const [fragrance, setFragrance] = useState("");
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState("");
-      const [confirmedName, setConfirmedName] = useState("");
-      const [sections, setSections] = useState({});
-      const [stepStatus, setStepStatus] = useState({});
-      const resultRef = useRef(null);
+      var _rev = useState(false), revealed = _rev[0], setRevealed = _rev[1];
+      var _fr = useState(""), fragrance = _fr[0], setFragrance = _fr[1];
+      var _ld = useState(false), loading = _ld[0], setLoading = _ld[1];
+      var _er = useState(""), error = _er[0], setError = _er[1];
+      var _cn = useState(""), confirmedName = _cn[0], setConfirmedName = _cn[1];
+      var _sc = useState({}), sections = _sc[0], setSections = _sc[1];
+      var _ss = useState({}), stepStatus = _ss[0], setStepStatus = _ss[1];
+      var resultRef = useRef(null);
 
-      const setStep = (label, status) => setStepStatus(p => ({ ...p, [label]: status }));
+      function setStep(label, status) { setStepStatus(function(p) { var n = Object.assign({}, p); n[label] = status; return n; }); }
 
-      const analyze = async () => {
+      function analyze() {
         if (!fragrance.trim()) return;
         setLoading(true); setError(""); setSections({}); setConfirmedName(""); setStepStatus({});
 
-        const callAPI = async (prompt, timeoutMs = 30000) => {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-          try {
-            const res = await fetch("https://api.anthropic.com/v1/messages", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              signal: ctrl.signal,
-              body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 2048,
-                messages: [{ role: "user", content: prompt }]
-              })
-            });
-            if (!res.ok) {
-              const e = await res.json().catch(() => ({}));
-              throw new Error(e?.error?.message || `API error ${res.status}`);
-            }
-            const data = await res.json();
-            const text = (data.content || [])
-              .filter(b => b.type === "text")
-              .map(b => b.text)
-              .join("\n")
-              .replace(/```json|```/g, "")
-              .trim();
-            const match = text.match(/\{[\s\S]*\}/);
-            if (!match) throw new Error("No JSON in response");
-            return JSON.parse(match[0]);
-          } finally {
-            clearTimeout(timer);
-          }
-        };
-
-        const fragranceCtx = () => `the fragrance: "${resolvedName}"${resolvedHouse ? ` by "${resolvedHouse}"` : ""}${resolvedCountry ? ` from ${resolvedCountry}` : ""}`;
-
-        let resolvedName = fragrance.trim();
-        let resolvedHouse = "";
-        let resolvedCountry = "";
-
-        try {
-          // Step 1: Quick targeted search on Parfumo
-          setStep("Identifying fragrance", "active");
-          try {
-            const searchController = new AbortController();
-            const searchTimeout = setTimeout(() => searchController.abort(), 15000);
-            const searchRes = await fetch("https://api.anthropic.com/v1/messages", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              signal: searchController.signal,
-              body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 300,
-                tools: [{ type: "web_search_20250305", name: "web_search" }],
-                messages: [{
-                  role: "user",
-                  content: `Search parfumo.com for: "${fragrance.trim()}". Return ONLY a JSON object (no markdown, no backticks) with: {"fragrance_full_name":"full name by house","house":"house name","country":"country of house"}`
-                }]
-              })
-            });
-            clearTimeout(searchTimeout);
-            if (searchRes.ok) {
-              const searchData = await searchRes.json();
-              const searchText = (searchData.content || [])
-                .filter(b => b.type === "text")
-                .map(b => b.text)
-                .join("\n")
-                .replace(/```json|```/g, "")
-                .trim();
-              const jsonMatch = searchText.match(/\{[\s\S]*?\}/);
-              if (jsonMatch) {
-                const parsed = JSON.parse(jsonMatch[0]);
-                if (parsed.fragrance_full_name) resolvedName = parsed.fragrance_full_name;
-                if (parsed.house) resolvedHouse = parsed.house;
-                if (parsed.country) resolvedCountry = parsed.country;
-              }
-            }
-            setStep("Identifying fragrance", "done");
-          } catch (e) {
-            console.warn("Parfumo lookup skipped:", e.name === "AbortError" ? "timed out" : e.message);
-            setStep("Identifying fragrance", "done");
-          }
-          setConfirmedName(resolvedName);
-          setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-
-          // Step 2: Batch 1 — Origin, Notes, Description
-          setStep("Origin & notes", "active");
-          const batch1 = await callAPI(`You are a fragrance expert. Analyze ${fragranceCtx()}.
-Return ONLY a valid JSON object (no markdown, no backticks):
-{
-  "confirmed_name": "Exact full official fragrance name including house",
-  "origin": "1-2 sentences: when the house was founded, where, and the specific creative vision or inspiration behind this fragrance.",
-  "notes": {"top_notes":"comma-separated top notes","mid_notes":"comma-separated mid/heart notes","base_notes":"comma-separated base notes"},
-  "frag_description": "3-4 sentences describing the full scent arc — the opening impression, the heart transition, and the dry-down."
-}`);
-          if (batch1.confirmed_name) {
-            setConfirmedName(batch1.confirmed_name);
-            resolvedName = batch1.confirmed_name;
-          }
-          setSections(prev => ({
-            ...prev,
-            ...(batch1.origin && { origin: batch1.origin }),
-            ...(batch1.notes && { notes: { top: batch1.notes.top_notes || "", mid: batch1.notes.mid_notes || "", base: batch1.notes.base_notes || "" } }),
-            ...(batch1.frag_description && { description: batch1.frag_description })
-          }));
-          setStep("Origin & notes", "done");
-
-          // Step 3: Batch 2 — Marvel & Sci-Fi vignettes
-          setStep("Character vignettes", "active");
-          const batch2 = await callAPI(`You are a fragrance expert. For ${fragranceCtx()}, provide creative character vignettes.
-Return ONLY a valid JSON object (no markdown, no backticks):
-{
-  "marvel": "2-3 sentences: a specific X-Men or Marvel character in a concrete scene that conveys this fragrance experience WITHOUT mentioning smell or scent. Set the scene vividly.",
-  "scifi": "1-2 sentences: a Star Wars, Star Trek, or Mass Effect character scene that conveys this fragrance WITHOUT mentioning smell or scent."
-}`);
-          setSections(prev => ({
-            ...prev,
-            ...(batch2.marvel && { marvel: batch2.marvel }),
-            ...(batch2.scifi && { scifi: batch2.scifi })
-          }));
-          setStep("Character vignettes", "done");
-
-          // Step 4: Batch 3 — Landmark & Traveler
-          setStep("Landmark & traveler", "active");
-          const batch3 = await callAPI(`You are a fragrance expert. For ${fragranceCtx()}, provide a landmark match and traveler analysis.
-Return ONLY a valid JSON object (no markdown, no backticks). Every key must be unique:
-{
-  "landmark": {"landmark_name":"a real famous world landmark","wiki_title":"Wikipedia article title","landmark_country":"country","landmark_desc":"2-3 sentences on why this landmark matches this fragrance. Describe the specific quality of the place that connects to the scent."},
-  "traveler": "2-3 sentences of mood analysis from a seasoned 30-year world traveler, based purely on the notes. Include what memory or place this scent evokes."
-}`);
-          setSections(prev => ({
-            ...prev,
-            ...(batch3.landmark && {
-              landmark: {
-                landmark_name: batch3.landmark.landmark_name || "",
-                country: batch3.landmark.landmark_country || "",
-                description: batch3.landmark.landmark_desc || "",
-                wiki_title: batch3.landmark.wiki_title || "",
-                wiki_url: `https://en.wikipedia.org/wiki/${encodeURIComponent((batch3.landmark.wiki_title || batch3.landmark.landmark_name || "").replace(/ /g, "_"))}`
-              }
-            }),
-            ...(batch3.traveler && { traveler: batch3.traveler })
-          }));
-          setStep("Landmark & traveler", "done");
-
-        } catch (e) {
-          console.error(e);
-          if (e.name === "AbortError") {
-            setError("Request timed out. Please try again.");
-          } else {
-            setError(`Something went wrong: ${e.message}`);
-          }
+        function callAPI(prompt, timeoutMs) {
+          timeoutMs = timeoutMs || 30000;
+          var ctrl = new AbortController();
+          var timer = setTimeout(function() { ctrl.abort(); }, timeoutMs);
+          return fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctrl.signal, body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 2048, messages: [{ role: "user", content: prompt }] }) })
+          .then(function(res) { if (!res.ok) return res.json().catch(function() { return {}; }).then(function(e) { throw new Error(e.error && e.error.message || "API error " + res.status); }); return res.json(); })
+          .then(function(data) { clearTimeout(timer); var text = (data.content || []).filter(function(b) { return b.type === "text"; }).map(function(b) { return b.text; }).join("\n").replace(/```json|```/g, "").trim(); var match = text.match(/\{[\s\S]*\}/); if (!match) throw new Error("No JSON in response"); return JSON.parse(match[0]); });
         }
-        setLoading(false);
-      };
 
-      const sec = sections;
-      const hasAny = Object.keys(sec).length > 0 || confirmedName;
-      const steps = Object.entries(stepStatus);
+        var resolvedName = fragrance.trim(), resolvedHouse = "", resolvedCountry = "";
+        function ctx() { return 'the fragrance: "' + resolvedName + '"' + (resolvedHouse ? ' by "' + resolvedHouse + '"' : '') + (resolvedCountry ? ' from ' + resolvedCountry : ''); }
 
-      return (
-        <div style={{ minHeight: "100vh", background: "#04080f", color: "#e8f4ff", fontFamily: "'Georgia', serif", position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "radial-gradient(ellipse at 20% 50%, rgba(30,86,160,0.15) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(58,155,213,0.08) 0%, transparent 50%)", zIndex: 0 }} />
-          <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundImage: "linear-gradient(rgba(58,155,213,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(58,155,213,0.05) 1px,transparent 1px)", backgroundSize: "48px 48px", zIndex: 1 }} />
-          <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "radial-gradient(ellipse at center,transparent 35%,rgba(2,5,15,0.9) 100%)", zIndex: 2 }} />
-          <DiagonalReveal onComplete={() => setRevealed(true)} />
-          <PixelSprite />
+        setStep("Identifying fragrance", "active");
+        var sCtrl = new AbortController(), sTimer = setTimeout(function() { sCtrl.abort(); }, 15000);
+        fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, signal: sCtrl.signal, body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 300, tools: [{ type: "web_search_20250305", name: "web_search" }], messages: [{ role: "user", content: 'Search parfumo.com for: "' + fragrance.trim() + '". Return ONLY a JSON object (no markdown, no backticks) with: {"fragrance_full_name":"full name by house","house":"house name","country":"country of house"}' }] }) })
+        .then(function(res) { clearTimeout(sTimer); return res.ok ? res.json() : null; })
+        .then(function(data) { if (data) { var t = (data.content || []).filter(function(b) { return b.type === "text"; }).map(function(b) { return b.text; }).join("\n").replace(/```json|```/g, "").trim(); var m = t.match(/\{[\s\S]*?\}/); if (m) { var p = JSON.parse(m[0]); if (p.fragrance_full_name) resolvedName = p.fragrance_full_name; if (p.house) resolvedHouse = p.house; if (p.country) resolvedCountry = p.country; } } })
+        .catch(function(e) { console.warn("Parfumo lookup skipped:", e.message); })
+        .then(function() {
+          setStep("Identifying fragrance", "done"); setConfirmedName(resolvedName);
+          setTimeout(function() { if (resultRef.current) resultRef.current.scrollIntoView({ behavior: "smooth" }); }, 100);
+          setStep("Origin & notes", "active");
+          return callAPI('You are a fragrance expert. Analyze ' + ctx() + '.\nReturn ONLY a valid JSON object (no markdown, no backticks):\n{\n  "confirmed_name": "Exact full official fragrance name including house",\n  "origin": "1-2 sentences: when the house was founded, where, and the specific creative vision or inspiration behind this fragrance.",\n  "notes": {"top_notes":"comma-separated top notes","mid_notes":"comma-separated mid/heart notes","base_notes":"comma-separated base notes"},\n  "frag_description": "3-4 sentences describing the full scent arc."\n}');
+        }).then(function(b1) {
+          if (b1.confirmed_name) { setConfirmedName(b1.confirmed_name); resolvedName = b1.confirmed_name; }
+          setSections(function(p) { var n = Object.assign({}, p); if (b1.origin) n.origin = b1.origin; if (b1.notes) n.notes = { top: b1.notes.top_notes || "", mid: b1.notes.mid_notes || "", base: b1.notes.base_notes || "" }; if (b1.frag_description) n.description = b1.frag_description; return n; });
+          setStep("Origin & notes", "done"); setStep("Character vignettes", "active");
+          return callAPI('You are a fragrance expert. For ' + ctx() + ', provide creative character vignettes.\nReturn ONLY a valid JSON object (no markdown, no backticks):\n{\n  "marvel": "2-3 sentences: a specific X-Men or Marvel character in a concrete scene that conveys this fragrance experience WITHOUT mentioning smell or scent. Set the scene vividly.",\n  "scifi": "1-2 sentences: a Star Wars, Star Trek, or Mass Effect character scene that conveys this fragrance WITHOUT mentioning smell or scent."\n}');
+        }).then(function(b2) {
+          setSections(function(p) { var n = Object.assign({}, p); if (b2.marvel) n.marvel = b2.marvel; if (b2.scifi) n.scifi = b2.scifi; return n; });
+          setStep("Character vignettes", "done"); setStep("Landmark & traveler", "active");
+          return callAPI('You are a fragrance expert. For ' + ctx() + ', provide a landmark match and traveler analysis.\nReturn ONLY a valid JSON object (no markdown, no backticks). Every key must be unique:\n{\n  "landmark": {"landmark_name":"a real famous world landmark","wiki_title":"Wikipedia article title","landmark_country":"country","landmark_desc":"2-3 sentences on why this landmark matches this fragrance."},\n  "traveler": "2-3 sentences of mood analysis from a seasoned 30-year world traveler, based purely on the notes."\n}');
+        }).then(function(b3) {
+          setSections(function(p) { var n = Object.assign({}, p); if (b3.landmark) { n.landmark = { landmark_name: b3.landmark.landmark_name || "", country: b3.landmark.landmark_country || "", description: b3.landmark.landmark_desc || "", wiki_title: b3.landmark.wiki_title || "", wiki_url: "https://en.wikipedia.org/wiki/" + encodeURIComponent((b3.landmark.wiki_title || b3.landmark.landmark_name || "").replace(/ /g, "_")) }; } if (b3.traveler) n.traveler = b3.traveler; return n; });
+          setStep("Landmark & traveler", "done");
+        }).catch(function(e) { console.error(e); setError(e.name === "AbortError" ? "Request timed out. Please try again." : "Something went wrong: " + e.message); })
+        .then(function() { setLoading(false); });
+      }
 
-          <div style={{ position: "relative", zIndex: 10, maxWidth: 760, margin: "0 auto", padding: "0 24px 120px" }}>
-            <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", opacity: revealed ? 1 : 0, transition: "opacity 0.8s ease 0.3s" }}>
-              <div style={{ animation: "float 4s ease-in-out infinite" }}>
-                <h1 style={{ fontSize: "clamp(2.4rem,7vw,4.2rem)", fontWeight: 400, margin: "0 0 8px 0", letterSpacing: 3, background: "linear-gradient(135deg,#a8d8f0,#3a9bd5,#1e56a0)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Sillage</h1>
-                <h1 style={{ fontSize: "clamp(1.4rem,4vw,2.2rem)", fontWeight: 400, margin: "0 0 32px 0", letterSpacing: 8, color: "rgba(126,207,238,0.65)" }}>SIDE QUEST</h1>
-              </div>
-              <p style={{ color: "rgba(126,207,238,0.45)", fontSize: 13, letterSpacing: 2, marginBottom: 40, textTransform: "uppercase" }}>Enter a fragrance. Begin the journey.</p>
-              <div style={{ display: "flex", gap: 0, width: "100%", maxWidth: 520 }}>
-                <input
-                  value={fragrance}
-                  onChange={e => { setFragrance(e.target.value); setError(""); }}
-                  onKeyDown={e => e.key === "Enter" && !loading && analyze()}
-                  placeholder="e.g. Bleu de Chanel, Black Orchid..."
-                  style={{ flex: 1, padding: "18px 24px", fontSize: 15, background: "rgba(4,12,28,0.9)", color: "#e8f4ff", border: "1px solid rgba(58,155,213,0.35)", borderRight: "none", borderRadius: "10px 0 0 10px", letterSpacing: 1, fontFamily: "Georgia, serif" }}
-                />
-                <button
-                  onClick={analyze}
-                  disabled={loading || !fragrance.trim()}
-                  style={{ padding: "18px 28px", fontSize: 13, letterSpacing: 2, background: loading ? "rgba(58,155,213,0.2)" : "linear-gradient(135deg,#1e56a0,#3a9bd5)", color: "#e8f4ff", border: "1px solid rgba(58,155,213,0.5)", borderRadius: "0 10px 10px 0", cursor: loading ? "default" : "pointer", textTransform: "uppercase", fontFamily: "Georgia, serif", transition: "all 0.3s ease", whiteSpace: "nowrap", animation: loading ? "revealPulse 1.2s ease-in-out infinite" : "none" }}
-                >
-                  {loading ? (stepStatus["Identifying fragrance"] === "active" ? "✦ Searching..." : "✦ Analyzing...") : "✦ Reveal"}
-                </button>
-              </div>
-              {error && <p style={{ color: "#e74c3c", marginTop: 16, fontSize: 13, maxWidth: 520, textAlign: "center" }}>⚠ {error}</p>}
-              {loading && steps.length > 0 && (
-                <div style={{ marginTop: 24, maxWidth: 300 }}>
-                  {steps.map(([label, status]) => <StatusBadge key={label} label={label} status={status} />)}
-                </div>
-              )}
-            </div>
+      var sec = sections, hasAny = Object.keys(sec).length > 0 || confirmedName, steps = Object.entries(stepStatus);
 
-            <div ref={resultRef}>
-              {hasAny && (
-                <div>
-                  <div style={{ textAlign: "center", marginBottom: 32, paddingTop: 8, animation: "fadeSlideUp 0.4s ease both" }}>
-                    <p style={{ color: "rgba(126,207,238,0.45)", fontSize: 11, letterSpacing: 4, textTransform: "uppercase", margin: "0 0 6px 0" }}>✦ confirmed fragrance ✦</p>
-                    <h2 style={{ fontSize: "clamp(1.2rem,3.5vw,1.8rem)", fontWeight: 400, letterSpacing: 3, background: "linear-gradient(135deg,#a8d8f0,#3a9bd5)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", margin: "0 0 10px 0" }}>
-                      {confirmedName || fragrance}{loading && <span style={{ animation: "blink 1s infinite", marginLeft: 4 }}>|</span>}
-                    </h2>
-                    <div style={{ height: 1, background: "linear-gradient(90deg,transparent,rgba(58,155,213,0.5),transparent)" }} />
-                  </div>
-                  {sec.origin && <Section title="Origin Story" icon="📜"><p style={{ color: "#c8dff5", lineHeight: 1.8, margin: 0 }}>{sec.origin}</p></Section>}
-                  {sec.notes && <Section title="Scent Notes" icon="⚗️"><NotesChart notes={sec.notes} /></Section>}
-                  {sec.description && <Section title="Fragrance Description" icon="🌫️"><p style={{ color: "#c8dff5", lineHeight: 1.8, margin: 0, whiteSpace: "pre-wrap" }}>{sec.description}</p></Section>}
-                  {sec.marvel && <Section title="Marvel / X-Men Vignette" icon="⚡"><p style={{ color: "#c8dff5", lineHeight: 1.8, margin: 0 }}>{sec.marvel}</p></Section>}
-                  {sec.scifi && <Section title="Sci-Fi Universe Vignette" icon="🚀"><p style={{ color: "#c8dff5", lineHeight: 1.8, margin: 0 }}>{sec.scifi}</p></Section>}
-                  {sec.landmark && (
-                    <Section title="Tourist Landmark" icon="🗺️">
-                      <p style={{ color: "#c8dff5", lineHeight: 1.8, margin: "0 0 14px 0" }}>{sec.landmark.description}</p>
-                      <div style={{ display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
-                        <LandmarkImage name={sec.landmark.landmark_name} country={sec.landmark.country} />
-                        <div>
-                          <p style={{ color: "#7ecfee", fontWeight: 700, fontSize: 16, margin: "0 0 4px 0" }}>{sec.landmark.landmark_name}</p>
-                          <p style={{ color: "#aac4e0", fontSize: 13, margin: "0 0 10px 0" }}>{sec.landmark.country}</p>
-                          {sec.landmark.wiki_url && (
-                            <a href={sec.landmark.wiki_url} target="_blank" rel="noreferrer" style={{ display: "inline-block", padding: "8px 16px", background: "rgba(58,155,213,0.15)", border: "1px solid rgba(58,155,213,0.4)", borderRadius: 8, color: "#7ecfee", textDecoration: "none", fontSize: 13, letterSpacing: 1 }}>Wikipedia ↗</a>
-                          )}
-                        </div>
-                      </div>
-                    </Section>
-                  )}
-                  {sec.traveler && <Section title="The Traveler's Read" icon="🧳"><p style={{ color: "#c8dff5", lineHeight: 1.8, margin: 0 }}>{sec.traveler}</p></Section>}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+      return h("div", { style: { minHeight: "100vh", background: "#04080f", color: "#e8f4ff", fontFamily: "'Georgia', serif", position: "relative", overflow: "hidden" } },
+        h("div", { style: { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "radial-gradient(ellipse at 20% 50%, rgba(30,86,160,0.15) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(58,155,213,0.08) 0%, transparent 50%)", zIndex: 0 } }),
+        h("div", { style: { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundImage: "linear-gradient(rgba(58,155,213,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(58,155,213,0.05) 1px,transparent 1px)", backgroundSize: "48px 48px", zIndex: 1 } }),
+        h("div", { style: { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "radial-gradient(ellipse at center,transparent 35%,rgba(2,5,15,0.9) 100%)", zIndex: 2 } }),
+        h(DiagonalReveal, { onComplete: function() { setRevealed(true); } }),
+        h(PixelSprite, null),
+        h("div", { style: { position: "relative", zIndex: 10, maxWidth: 760, margin: "0 auto", padding: "0 24px 120px" } },
+          h("div", { style: { minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", opacity: revealed ? 1 : 0, transition: "opacity 0.8s ease 0.3s" } },
+            h("div", { style: { animation: "float 4s ease-in-out infinite" } },
+              h("h1", { style: { fontSize: "clamp(2.4rem,7vw,4.2rem)", fontWeight: 400, margin: "0 0 8px 0", letterSpacing: 3, background: "linear-gradient(135deg,#a8d8f0,#3a9bd5,#1e56a0)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" } }, "Sillage"),
+              h("h1", { style: { fontSize: "clamp(1.4rem,4vw,2.2rem)", fontWeight: 400, margin: "0 0 32px 0", letterSpacing: 8, color: "rgba(126,207,238,0.65)" } }, "SIDE QUEST")
+            ),
+            h("p", { style: { color: "rgba(126,207,238,0.45)", fontSize: 13, letterSpacing: 2, marginBottom: 40, textTransform: "uppercase" } }, "Enter a fragrance. Begin the journey."),
+            h("div", { style: { display: "flex", gap: 0, width: "100%", maxWidth: 520 } },
+              h("input", { value: fragrance, onChange: function(e) { setFragrance(e.target.value); setError(""); }, onKeyDown: function(e) { if (e.key === "Enter" && !loading) analyze(); }, placeholder: "e.g. Bleu de Chanel, Black Orchid...", style: { flex: 1, padding: "18px 24px", fontSize: 15, background: "rgba(4,12,28,0.9)", color: "#e8f4ff", border: "1px solid rgba(58,155,213,0.35)", borderRight: "none", borderRadius: "10px 0 0 10px", letterSpacing: 1, fontFamily: "Georgia, serif" } }),
+              h("button", { onClick: analyze, disabled: loading || !fragrance.trim(), style: { padding: "18px 28px", fontSize: 13, letterSpacing: 2, background: loading ? "rgba(58,155,213,0.2)" : "linear-gradient(135deg,#1e56a0,#3a9bd5)", color: "#e8f4ff", border: "1px solid rgba(58,155,213,0.5)", borderRadius: "0 10px 10px 0", cursor: loading ? "default" : "pointer", textTransform: "uppercase", fontFamily: "Georgia, serif", transition: "all 0.3s ease", whiteSpace: "nowrap", animation: loading ? "revealPulse 1.2s ease-in-out infinite" : "none" } }, loading ? (stepStatus["Identifying fragrance"] === "active" ? "\u2726 Searching..." : "\u2726 Analyzing...") : "\u2726 Reveal")
+            ),
+            error ? h("p", { style: { color: "#e74c3c", marginTop: 16, fontSize: 13, maxWidth: 520, textAlign: "center" } }, "\u26A0 " + error) : null,
+            loading && steps.length > 0 ? h("div", { style: { marginTop: 24, maxWidth: 300 } }, steps.map(function(s) { return h(StatusBadge, { key: s[0], label: s[0], status: s[1] }); })) : null
+          ),
+          h("div", { ref: resultRef },
+            hasAny ? h("div", null,
+              h("div", { style: { textAlign: "center", marginBottom: 32, paddingTop: 8, animation: "fadeSlideUp 0.4s ease both" } },
+                h("p", { style: { color: "rgba(126,207,238,0.45)", fontSize: 11, letterSpacing: 4, textTransform: "uppercase", margin: "0 0 6px 0" } }, "\u2726 confirmed fragrance \u2726"),
+                h("h2", { style: { fontSize: "clamp(1.2rem,3.5vw,1.8rem)", fontWeight: 400, letterSpacing: 3, background: "linear-gradient(135deg,#a8d8f0,#3a9bd5)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", margin: "0 0 10px 0" } }, confirmedName || fragrance, loading ? h("span", { style: { animation: "blink 1s infinite", marginLeft: 4 } }, "|") : null),
+                h("div", { style: { height: 1, background: "linear-gradient(90deg,transparent,rgba(58,155,213,0.5),transparent)" } })
+              ),
+              sec.origin ? h(Section, { title: "Origin Story", icon: "\uD83D\uDCDC" }, h("p", { style: { color: "#c8dff5", lineHeight: 1.8, margin: 0 } }, sec.origin)) : null,
+              sec.notes ? h(Section, { title: "Scent Notes", icon: "\u2697\uFE0F" }, h(NotesChart, { notes: sec.notes })) : null,
+              sec.description ? h(Section, { title: "Fragrance Description", icon: "\uD83C\uDF2B\uFE0F" }, h("p", { style: { color: "#c8dff5", lineHeight: 1.8, margin: 0, whiteSpace: "pre-wrap" } }, sec.description)) : null,
+              sec.marvel ? h(Section, { title: "Marvel / X-Men Vignette", icon: "\u26A1" }, h("p", { style: { color: "#c8dff5", lineHeight: 1.8, margin: 0 } }, sec.marvel)) : null,
+              sec.scifi ? h(Section, { title: "Sci-Fi Universe Vignette", icon: "\uD83D\uDE80" }, h("p", { style: { color: "#c8dff5", lineHeight: 1.8, margin: 0 } }, sec.scifi)) : null,
+              sec.landmark ? h(Section, { title: "Tourist Landmark", icon: "\uD83D\uDDFA\uFE0F" },
+                h("p", { style: { color: "#c8dff5", lineHeight: 1.8, margin: "0 0 14px 0" } }, sec.landmark.description),
+                h("div", { style: { display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" } },
+                  h(LandmarkImage, { name: sec.landmark.landmark_name, country: sec.landmark.country }),
+                  h("div", null,
+                    h("p", { style: { color: "#7ecfee", fontWeight: 700, fontSize: 16, margin: "0 0 4px 0" } }, sec.landmark.landmark_name),
+                    h("p", { style: { color: "#aac4e0", fontSize: 13, margin: "0 0 10px 0" } }, sec.landmark.country),
+                    sec.landmark.wiki_url ? h("a", { href: sec.landmark.wiki_url, target: "_blank", rel: "noreferrer", style: { display: "inline-block", padding: "8px 16px", background: "rgba(58,155,213,0.15)", border: "1px solid rgba(58,155,213,0.4)", borderRadius: 8, color: "#7ecfee", textDecoration: "none", fontSize: 13, letterSpacing: 1 } }, "Wikipedia \u2197") : null
+                  )
+                )
+              ) : null,
+              sec.traveler ? h(Section, { title: "The Traveler's Read", icon: "\uD83E\uDDF3" }, h("p", { style: { color: "#c8dff5", lineHeight: 1.8, margin: 0 } }, sec.traveler)) : null
+            ) : null
+          )
+        )
       );
     }
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    ReactDOM.createRoot(document.getElementById("root")).render(h(App, null));
   </script>
 </body>
 </html>
