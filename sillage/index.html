@@ -151,7 +151,7 @@ function LandmarkImage({name}){
 }
 
 const callAPI=async(prompt)=>{
-  const res=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2048,messages:[{role:"user",content:prompt}]})});
+  const res=await fetch("/.netlify/functions/claude-proxy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2048,messages:[{role:"user",content:prompt}]})});
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`API error ${res.status}`);}
   const data=await res.json();
   const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim();
@@ -178,7 +178,7 @@ function App(){
       setStep("Identifying fragrance","active");
       let resolved={fragrance_full_name:fragrance.trim(),house:"",country:""};
       try{
-        const res=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Search for the fragrance: "${fragrance.trim()}". Return ONLY a JSON object with keys "fragrance_full_name","house","country". No markdown.`}]})});
+        const res=await fetch("/.netlify/functions/claude-proxy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Search for the fragrance: "${fragrance.trim()}". Return ONLY a JSON object with keys "fragrance_full_name","house","country". No markdown.`}]})});
         const data=await res.json();
         const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("").replace(/```json|```/g,"").trim();
         const m=text.match(/\{[\s\S]*?\}/);
