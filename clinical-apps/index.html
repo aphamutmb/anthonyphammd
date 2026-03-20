@@ -4,8 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Physician Charge Submission</title>
-<link rel="apple-touch-icon" href="https://www.dropbox.com/scl/fi/pubosfj4hl6kufpe7uxsi/Photo-Mar-07-2026-8-35-12-AM.jpg?rlkey=8jg5sapf7i45cohvya7in6k65&st=1biefki7&raw=1"/>
-<meta name="apple-mobile-web-app-title" content="PhysicianCharge"/>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:#fdf6f0;color:#1a1a1a;min-height:100vh}
@@ -77,7 +75,7 @@
   .modal-sub{color:#f0c4aa;font-size:.8rem;margin-bottom:14px;text-align:center;line-height:1.5}
   #videoEl{width:100%;max-width:500px;border-radius:12px;border:2px solid #b5451b}
   .ocr-frame{position:relative;width:100%;max-width:500px}
-  .ocr-overlay-epic{position:absolute;top:5%;left:3%;width:42%;height:35%;border:2px dashed rgba(255,181,100,.8);border-radius:6px;pointer-events:none}
+  .ocr-overlay-epic{position:absolute;top:5%;left:3%;width:42%;height:88%;border:2px dashed rgba(255,181,100,.8);border-radius:6px;pointer-events:none}
   .ocr-overlay-iknowmed{position:absolute;top:15%;left:5%;width:90%;height:30%;border:2px dashed rgba(255,181,100,.8);border-radius:6px;pointer-events:none}
   .ocr-label{position:absolute;background:rgba(181,69,27,.8);color:#fff;font-size:.72rem;padding:3px 10px;border-radius:20px;white-space:nowrap}
   .ocr-label-epic{top:2%;left:3%}
@@ -86,7 +84,7 @@
   .capture-btn{flex:1;padding:13px;background:#b5451b;color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:inherit}
   .capture-btn:disabled{background:#666;cursor:not-allowed}
   .cancel-btn{padding:13px 20px;background:transparent;color:#fff;border:2px solid rgba(255,255,255,.3);border-radius:10px;font-size:.95rem;cursor:pointer;font-family:inherit}
-  .ocr-status{color:#f0c4aa;font-size:.75rem;margin-top:10px;text-align:center;min-height:20px;max-height:80px;overflow-y:auto;word-break:break-all;padding:0 4px}
+  .ocr-status{color:#f0c4aa;font-size:.8rem;margin-top:10px;text-align:center;min-height:20px}
   canvas{display:none}
   @media(max-width:480px){.form-row.two{grid-template-columns:1fr}.billing-grid{grid-template-columns:1fr}}
 </style>
@@ -110,7 +108,7 @@
 
 <!-- OCR Modal -->
 <div class="modal-overlay hidden" id="ocrModal">
-  <div class="modal-header" id="modalHeader">Point at Epic Patient Header</div>
+  <div class="modal-header" id="modalHeader">Point at Epic Patient Storyboard</div>
   <div class="modal-sub" id="modalSub">Align the patient's name and DOB within the highlighted area</div>
   <div class="ocr-frame">
     <video id="videoEl" autoplay playsinline muted></video>
@@ -202,7 +200,6 @@ const STORAGE_KEY='pcs_recent_patients';
 let patients=[],pid=0,_recentStore=[],_activeScanId=null,_scanMode='epic';
 let _stream=null;
 
-// ── Password ──────────────────────────────────────────────────
 function checkPassword(){
   const val=document.getElementById('pwInput').value;
   if(val==='compass'){
@@ -219,7 +216,6 @@ document.getElementById('pwInput').addEventListener('keydown',function(e){
   if(e.key==='Enter') checkPassword();
 });
 
-// ── Init ──────────────────────────────────────────────────────
 function today(){return new Date().toISOString().split('T')[0];}
 document.getElementById('dateOfService').value=today();
 document.getElementById('addPatientBtn').addEventListener('click',()=>addPatient());
@@ -227,7 +223,6 @@ document.getElementById('submitBtn').addEventListener('click',submitCharges);
 document.getElementById('captureBtn').addEventListener('click',captureAndRead);
 document.getElementById('cancelBtn').addEventListener('click',closeScanner);
 
-// ── Storage ───────────────────────────────────────────────────
 function initRecent(){
   try{
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -250,7 +245,6 @@ function saveRecent(newPatients){
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(_recentStore));}catch(e){}
 }
 
-// ── Recent UI ─────────────────────────────────────────────────
 function renderRecent(){
   const sec=document.getElementById('recentSection');
   const valid=_recentStore.filter(p=>p.savedAt>Date.now()-7*24*60*60*1000);
@@ -276,9 +270,7 @@ function addRecentPatient(idx){
     const facEl=document.getElementById('pfac-'+id);
     if(facEl && p.facility){
       for(let i=0;i<facEl.options.length;i++){
-        if(facEl.options[i].value===p.facility){
-          facEl.selectedIndex=i; break;
-        }
+        if(facEl.options[i].value===p.facility){facEl.selectedIndex=i;break;}
       }
     }
     if(p.codeCodes && p.codeCodes.length){
@@ -294,7 +286,6 @@ function addRecentPatient(idx){
 
 function setField(id,val){const el=document.getElementById(id);if(el)el.value=val;}
 
-// ── Patient form ──────────────────────────────────────────────
 function addPatient(prefill){
   const id=++pid; patients.push(id); renderPatients();
   if(prefill) setTimeout(()=>applyPrefill(id,prefill),60);
@@ -352,7 +343,6 @@ function renderPatients(){
         '</select></div>'+
         '<div><label>MRN <span style="color:#c0a090;font-weight:400">(optional)</span></label><input type="text" id="pmrn-'+id+'" placeholder="IKnowMed MRN"/></div>'+
       '</div>'+
-      '<div style="margin-bottom:12px"><label>Diagnoses</label><textarea id="pdiag-'+id+'" placeholder="Enter diagnoses…" style="width:100%;padding:9px 12px;border:1.5px solid #e8c9b5;border-radius:8px;font-size:.88rem;font-family:inherit;color:#1a1a1a;background:#fff;resize:vertical;min-height:70px;transition:border .2s"></textarea></div>'+
       '<div><label>Billing Codes *</label>'+
         '<div class="billing-grid" id="codes-'+id+'">'+
           CPT_CODES.map(c=>
@@ -384,7 +374,6 @@ function renderPatients(){
   });
 }
 
-// ── DOB sync ──────────────────────────────────────────────────
 function syncDobFromText(id){
   const el=document.getElementById('pdob-text-'+id);
   let v=el.value.replace(/\D/g,'');
@@ -404,7 +393,6 @@ function syncDobFromPicker(id){
   document.getElementById('pdob-text-'+id).value=m+'/'+d+'/'+y;
 }
 
-// ── Codes ─────────────────────────────────────────────────────
 function updateTags(pid){
   const sel=[...document.querySelectorAll('#codes-'+pid+' .code-btn.selected')].map(b=>b.querySelector('.code').textContent);
   document.getElementById('tags-'+pid).innerHTML=sel.map(c=>'<span class="code-tag">'+c+'</span>').join('');
@@ -416,7 +404,6 @@ function getSelectedCodeCodes(pid){
   return [...document.querySelectorAll('#codes-'+pid+' .code-btn.selected')].map(b=>b.querySelector('.code').textContent);
 }
 
-// ── OCR Scanner ───────────────────────────────────────────────
 async function openScanner(patientId,mode){
   mode=mode||'epic';
   _activeScanId=patientId;
@@ -460,43 +447,34 @@ async function captureAndRead(){
   const status=document.getElementById('ocrStatus');
   btn.disabled=true;
   status.textContent='📸 Capturing…';
-
-  // ── Crop to the overlay region ────────────────────────────────
-  // Overlay dimensions are defined in CSS as percentages of the video element.
-  // We map those percentages onto the actual video pixel dimensions.
-  const vw=video.videoWidth||640;
-  const vh=video.videoHeight||480;
-  let sx,sy,sw,sh;
-  if(_scanMode==='epic'){
-    // .ocr-overlay-epic: left 3%, top 5%, width 42%, height 35%
-    sx=Math.round(vw*0.03); sy=Math.round(vh*0.05);
-    sw=Math.round(vw*0.42); sh=Math.round(vh*0.35);
-  } else {
-    // .ocr-overlay-iknowmed: left 5%, top 15%, width 90%, height 30%
-    sx=Math.round(vw*0.05); sy=Math.round(vh*0.15);
-    sw=Math.round(vw*0.90); sh=Math.round(vh*0.30);
-  }
-  canvas.width=sw;
-  canvas.height=sh;
-  canvas.getContext('2d').drawImage(video, sx, sy, sw, sh, 0, 0, sw, sh);
-
-  // JPEG quality 0.65 — sufficient for printed EMR text, meaningfully smaller payload
-  const base64=canvas.toDataURL('image/jpeg', 0.65).split(',')[1];
+  canvas.width=video.videoWidth||640;
+  canvas.height=video.videoHeight||480;
+  canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
+  const base64=canvas.toDataURL('image/jpeg',.85).split(',')[1];
   status.textContent='🔍 Reading patient info…';
-
   const prompt=_scanMode==='epic'
-    ?`Epic EMR Storyboard crop. Extract name (Last, First) and dob (MM/DD/YYYY). JSON only: {"name":"...","dob":"..."}. Omit unclear fields.`
-    :`IKnowMed G2 header crop. Extract name (Last, First), dob (MM/DD/YYYY), mrn (numeric ID). JSON only: {"name":"...","dob":"...","mrn":"..."}. Omit unclear fields.`;
-
+    ?`This is a screenshot of an Epic EMR screen. The patient demographic information is in the Storyboard panel — a tall, narrow, boxy section on the LEFT side of the screen with patient name, DOB, age stacked vertically.
+Extract ONLY:
+- name (Last, First format)
+- dob (MM/DD/YYYY format)
+Do NOT include any MRN or numeric ID.
+Respond ONLY with raw JSON. Example: {"name":"Smith, John","dob":"04/15/1962"}
+Omit any field that is unclear.`
+    :`This is a screenshot of an IKnowMed G2 EMR patient header — a horizontal banner at the top.
+Extract ALL of:
+- name (Last, First format)
+- dob (MM/DD/YYYY format)
+- mrn (IKnowMed patient ID number)
+Respond ONLY with raw JSON. Example: {"name":"Smith, John","dob":"04/15/1962","mrn":"7654321"}
+Omit any field that is unclear.`;
+  let resp;
   try{
-    const resp=await fetch('/.netlify/functions/claude-proxy',{
+    resp=await fetch('https://ahl8zh0plk.execute-api.us-east-1.amazonaws.com/default/compass-bedrock-proxy',{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-      },
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:80,
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:300,
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},
           {type:'text',text:prompt}
@@ -504,8 +482,7 @@ async function captureAndRead(){
       })
     });
     const data=await resp.json();
-    if(data.error){status.textContent='⚠️ API: '+data.error.type+' — '+data.error.message;btn.disabled=false;return;}
-    if(!resp.ok){status.textContent='⚠️ HTTP '+resp.status+': '+JSON.stringify(data);btn.disabled=false;return;}
+    if(!resp.ok){const em=data&&data.error&&data.error.message?data.error.message:JSON.stringify(data);status.textContent='⚠️ '+resp.status+': '+em;btn.disabled=false;return;}
     const text=data.content.map(i=>i.text||'').join('').trim();
     let parsed;
     try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}
@@ -519,12 +496,11 @@ async function captureAndRead(){
     status.textContent='✓ Filled: '+filled.join(', ');
     setTimeout(()=>closeScanner(),1200);
   }catch(e){
-    status.textContent='⚠️ Fetch failed: '+(e.message||String(e));
+    status.textContent='⚠️ Error: '+e.message+' | HTTP: '+(resp ? resp.status : 'none');
     btn.disabled=false;
   }
 }
 
-// ── Validate ──────────────────────────────────────────────────
 function getDobValue(id){return(document.getElementById('pdob-text-'+id)||{}).value||'';}
 
 function validate(){
@@ -546,11 +522,10 @@ function validate(){
   return ok;
 }
 
-// ── Submit ────────────────────────────────────────────────────
 function buildBody(physician,dos,pdata){
   let b='PHYSICIAN CHARGE SUBMISSION\n'+'='.repeat(40)+'\nPhysician: '+physician+'\nDate of Service: '+dos+'\nSubmitted: '+new Date().toLocaleString()+'\n'+'='.repeat(40)+'\n\n';
   pdata.forEach((p,i)=>{
-    b+='PATIENT '+(i+1)+'\n'+'-'.repeat(30)+'\nName:       '+p.name+'\nDOB:        '+p.dob+'\nFacility:   '+p.facility+'\nMRN:        '+(p.mrn||'N/A')+'\nDiagnoses:  '+(p.diagnoses||'N/A')+'\nCPT Codes:\n';
+    b+='PATIENT '+(i+1)+'\n'+'-'.repeat(30)+'\nName:       '+p.name+'\nDOB:        '+p.dob+'\nFacility:   '+p.facility+'\nMRN:        '+(p.mrn||'N/A')+'\nCPT Codes:\n';
     p.codes.forEach(c=>{b+='  • '+c+'\n';});
     b+='\n';
   });
@@ -567,7 +542,6 @@ async function submitCharges(){
     dob:getDobValue(id),
     facility:(document.getElementById('pfac-'+id)||{value:''}).value,
     mrn:(document.getElementById('pmrn-'+id)||{value:''}).value.trim(),
-    diagnoses:(document.getElementById('pdiag-'+id)||{value:''}).value.trim(),
     codes:getSelectedCodes(id),
     codeCodes:getSelectedCodeCodes(id),
     savedAt:Date.now(),
@@ -600,7 +574,6 @@ async function submitCharges(){
   }
 }
 
-// ── Start ─────────────────────────────────────────────────────
 addPatient();
 initRecent();
 </script>
