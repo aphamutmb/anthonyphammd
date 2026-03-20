@@ -10,8 +10,95 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Sillage"/>
   <meta name="theme-color" content="#04080f"/>
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"/>
-  <link rel="shortcut icon" href="apple-touch-icon.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" id="appicon"/>
+  <link rel="shortcut icon" id="favicon"/>
+</head>
+<body>
+<div id="root"></div>
+<canvas id="iconCanvas" width="180" height="180" style="display:none"></canvas>
+<script>
+// Generate icon as real PNG via canvas — works on iOS
+(function(){
+  const c = document.getElementById('iconCanvas');
+  const ctx = c.getContext('2d');
+  const w = 180, h = 180;
+
+  // Background
+  const bg = ctx.createRadialGradient(90,90,10,90,90,130);
+  bg.addColorStop(0,'#0a1828'); bg.addColorStop(1,'#04080f');
+  ctx.fillStyle = bg;
+  roundRect(ctx,0,0,w,h,36); ctx.fill();
+
+  // Halo rings
+  ctx.strokeStyle='rgba(30,86,160,0.35)'; ctx.lineWidth=1.5;
+  circle(ctx,90,85,66);
+  ctx.strokeStyle='rgba(58,155,213,0.25)'; ctx.lineWidth=1;
+  circle(ctx,90,85,56);
+
+  // Wisp dots left
+  wisp(ctx,42,62,7,0.55); wisp(ctx,28,48,5,0.4); wisp(ctx,16,36,3,0.28);
+  // Wisp dots right
+  wisp(ctx,138,62,7,0.55); wisp(ctx,152,48,5,0.4); wisp(ctx,164,36,3,0.28);
+
+  // Flask body
+  ctx.beginPath();
+  ctx.ellipse(90,106,30,34,0,0,Math.PI*2);
+  ctx.fillStyle='#0a1830'; ctx.fill();
+  ctx.strokeStyle='#3a9bd5'; ctx.lineWidth=2.5; ctx.stroke();
+
+  // Flask neck
+  ctx.fillStyle='#0a1830'; ctx.strokeStyle='#3a9bd5'; ctx.lineWidth=2.5;
+  roundRect(ctx,76,63,28,24,4); ctx.fill(); ctx.stroke();
+
+  // Stopper
+  ctx.fillStyle='#1e56a0'; ctx.strokeStyle='#7ecfee'; ctx.lineWidth=1.5;
+  roundRect(ctx,71,53,38,12,4); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='rgba(45,111,192,0.55)';
+  roundRect(ctx,78,56,24,6,2); ctx.fill();
+
+  // Liquid
+  const liq = ctx.createRadialGradient(90,95,4,90,108,28);
+  liq.addColorStop(0,'rgba(58,155,213,0.55)'); liq.addColorStop(1,'rgba(13,48,106,0.95)');
+  ctx.beginPath(); ctx.ellipse(90,112,23,25,0,0,Math.PI*2);
+  ctx.fillStyle=liq; ctx.fill();
+
+  // Shine
+  ctx.beginPath(); ctx.ellipse(90,89,14,5,0,0,Math.PI*2);
+  ctx.fillStyle='rgba(126,207,238,0.18)'; ctx.fill();
+
+  // Bubbles
+  wisp(ctx,80,109,3.5,0.45); wisp(ctx,100,115,2.5,0.35); wisp(ctx,88,122,2,0.5);
+
+  // Wordmark
+  ctx.fillStyle='rgba(126,207,238,0.92)';
+  ctx.font='bold 13px Georgia,serif';
+  ctx.letterSpacing='3px';
+  ctx.textAlign='center';
+  ctx.fillText('SILLAGE',90,158);
+
+  // Star sparkles
+  ctx.fillStyle='rgba(126,207,238,0.75)'; ctx.font='14px serif';
+  ctx.fillText('✦',26,32);
+  ctx.fillStyle='rgba(58,155,213,0.6)'; ctx.font='11px serif';
+  ctx.fillText('✦',148,28);
+  ctx.fillStyle='rgba(58,155,213,0.5)'; ctx.font='10px serif';
+  ctx.fillText('✦',52,150);
+
+  const png = c.toDataURL('image/png');
+  document.getElementById('appicon').href = png;
+  document.getElementById('favicon').href = png;
+
+  function roundRect(ctx,x,y,w,h,r){
+    ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+  }
+  function circle(ctx,x,y,r){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();}
+  function wisp(ctx,x,y,r,op){
+    const g=ctx.createRadialGradient(x,y,0,x,y,r*2);
+    g.addColorStop(0,`rgba(58,155,213,${op})`);g.addColorStop(1,'rgba(58,155,213,0)');
+    ctx.beginPath();ctx.arc(x,y,r*2,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+  }
+})();
+</script>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-title" content="Sillage"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
