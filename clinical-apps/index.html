@@ -179,10 +179,6 @@
   <button class="submit-btn" id="submitBtn">Submit Charge Sheet</button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>
-  emailjs.init('yaZG-15EK8gH5PR3a');
-</script>
 <script>
 const CPT_CODES=[
   {code:'99231',desc:'Subsequent Hospital Care – Low'},
@@ -557,17 +553,19 @@ async function submitCharges(){
   btn.textContent='Sending…';
 
   try{
-    await emailjs.send('service_2jrboaa','template_uo3osfq',{
-      subject:subject,
-      message:message,
-      to_email:'anthony.pham@compassoncology.com',
+    const resp=await fetch('https://ahl8zh0plk.execute-api.us-east-1.amazonaws.com/default/compass-bedrock-proxy',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'sendEmail',subject,message})
     });
+    const data=await resp.json();
+    if(!resp.ok) throw new Error(data?.error?.message||'Send failed');
     const box=document.getElementById('successBox');
     document.getElementById('successMsg').textContent='Charge sheet for '+physician+' — '+pdata.length+' patient(s) on '+dos+' — sent successfully to anthony.pham@compassoncology.com.';
     box.classList.add('show');
     box.scrollIntoView({behavior:'smooth'});
   }catch(e){
-    alert('Failed to send. Please check your connection and try again.\n\nError: '+e.text);
+    alert('Failed to send. Please check your connection and try again.\n\nError: '+e.message);
   }finally{
     btn.disabled=false;
     btn.textContent='Submit Charge Sheet';
