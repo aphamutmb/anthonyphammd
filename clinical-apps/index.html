@@ -286,8 +286,8 @@ function updateTags(pid){const sel=[...document.querySelectorAll('#codes-'+pid+'
 function getSelectedCodes(pid){return[...document.querySelectorAll('#codes-'+pid+' .code-btn.selected')].map(b=>b.querySelector('.code').textContent+' – '+b.querySelector('.desc').textContent);}
 function getSelectedCodeCodes(pid){return[...document.querySelectorAll('#codes-'+pid+' .code-btn.selected')].map(b=>b.querySelector('.code').textContent);}
 
-const STABILITY={W:160,H:90,THRESHOLD:15,FRAMES_NEEDED:4,TIMEOUT_MS:10000};
-let _stabilityInterval=null,_prevPixels=null,_stableCount=0,_stabilityStartTime=0,_captureTriggered=false;
+const STABILITY={W:160,H:90,THRESHOLD:28,FRAMES_NEEDED:3,TIMEOUT_MS:10000,FORGIVENESS:1,HISTORY:4};
+let _stabilityInterval=null,_frameHistory=[],_stableCount=0,_stabilityStartTime=0,_captureTriggered=false;
 
 function showLiveVideo(){document.getElementById('videoEl').style.display='block';document.getElementById('snapCanvas').style.display='none';document.getElementById('ocrOverlay').style.display='block';document.getElementById('stabilityBarWrap').style.display='flex';}
 function showFrozenFrame(){document.getElementById('videoEl').style.display='none';document.getElementById('snapCanvas').style.display='block';document.getElementById('ocrOverlay').style.display='none';document.getElementById('stabilityBarWrap').style.display='none';}
@@ -311,7 +311,7 @@ async function openScanner(patientId,mode){
 }
 
 function closeScanner(){stopStabilityLoop();if(_stream){_stream.getTracks().forEach(t=>t.stop());_stream=null;}document.getElementById('videoEl').srcObject=null;document.getElementById('ocrModal').classList.add('hidden');showLiveVideo();_activeScanId=null;}
-function resetStabilityState(){_prevPixels=null;_stableCount=0;_stabilityStartTime=Date.now();_captureTriggered=false;}
+function resetStabilityState(){_frameHistory=[];_stableCount=0;_stabilityStartTime=Date.now();_captureTriggered=false;}
 function stopStabilityLoop(){if(_stabilityInterval){clearInterval(_stabilityInterval);_stabilityInterval=null;}}
 
 function startStabilityLoop(){
@@ -323,16 +323,24 @@ function startStabilityLoop(){
     if(!video.videoWidth)return;
     ctx.drawImage(video,0,0,STABILITY.W,STABILITY.H);
     let currPixels;try{currPixels=ctx.getImageData(0,0,STABILITY.W,STABILITY.H).data;}catch(e){return;}
-    if(_prevPixels){
+    if(_frameHistory.length>0){
+      // Rolling average: blend current frame with recent history
+      const avg=new Float32Array(STABILITY.W*STABILITY.H*4);
+      _frameHistory.forEach(f=>{for(let i=0;i<f.length;i++)avg[i]+=f[i];});
+      for(let i=0;i<avg.length;i++)avg[i]/=_frameHistory.length;
+      // Compute MAD against rolling average
       let sum=0;const len=currPixels.length;
-      for(let i=0;i<len;i+=4){sum+=Math.abs(currPixels[i]-_prevPixels[i]);sum+=Math.abs(currPixels[i+1]-_prevPixels[i+1]);sum+=Math.abs(currPixels[i+2]-_prevPixels[i+2]);}
+      for(let i=0;i<len;i+=4){sum+=Math.abs(currPixels[i]-avg[i]);sum+=Math.abs(currPixels[i+1]-avg[i+1]);sum+=Math.abs(currPixels[i+2]-avg[i+2]);}
       const mad=sum/(STABILITY.W*STABILITY.H*3),isStable=mad<STABILITY.THRESHOLD;
-      if(isStable)_stableCount++;else _stableCount=0;
+      if(isStable){_stableCount=Math.min(_stableCount+1,STABILITY.FRAMES_NEEDED);}
+      else{_stableCount=Math.max(0,_stableCount-STABILITY.FORGIVENESS);} // forgiveness: only drop by 1
       const pct=Math.min(100,Math.round((_stableCount/STABILITY.FRAMES_NEEDED)*100));
       updateStabilityUI(_stableCount,pct);
       if(_stableCount>=STABILITY.FRAMES_NEEDED){_captureTriggered=true;stopStabilityLoop();setStabilityBar(100,'Locked!');setOcrStatus('🔒 Stable — capturing…');setTimeout(()=>doCapture(video),120);return;}
     }
-    _prevPixels=currPixels;
+    // Keep rolling history capped at HISTORY frames
+    _frameHistory.push(new Uint8ClampedArray(currPixels));
+    if(_frameHistory.length>STABILITY.HISTORY)_frameHistory.shift();
     if(Date.now()-_stabilityStartTime>STABILITY.TIMEOUT_MS){stopStabilityLoop();setStabilityBar(0,'Manual mode');setOcrStatus('Auto-detect timed out. Tap the button to capture manually.');document.getElementById('captureBtn').classList.add('manual-ready');}
   },100);
 }
