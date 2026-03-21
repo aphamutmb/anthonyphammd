@@ -306,7 +306,11 @@ async function openScanner(patientId,mode){
   try{
     _stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}}});
     const video=document.getElementById('videoEl');video.srcObject=_stream;
-    video.onloadedmetadata=()=>{video.play();startStabilityLoop();};
+    video.onloadedmetadata=()=>{
+      video.play();
+      // 1.5s delay before stability detection starts — prevents auto-firing on your own screen
+      setTimeout(()=>{ if(!_captureTriggered) startStabilityLoop(); }, 1500);
+    };
   }catch(e){setOcrStatus('Camera access denied. Please allow camera in Safari settings.','error');btn.classList.add('manual-ready');}
 }
 
@@ -363,7 +367,9 @@ async function doCapture(video){
   canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
   showFrozenFrame();canvas.classList.remove('capture-flash');void canvas.offsetWidth;canvas.classList.add('capture-flash');
   setOcrStatus('📸 Captured — you can lower your phone. Analyzing…');
-  if(_stream){_stream.getTracks().forEach(t=>t.stop());_stream=null;}document.getElementById('videoEl').srcObject=null;
+  // Stop stream only after freeze — camera no longer needed
+  if(_stream){_stream.getTracks().forEach(t=>t.stop());_stream=null;}
+  document.getElementById('videoEl').srcObject=null;
   const base64=canvas.toDataURL('image/jpeg',.88).split(',')[1];
   const prompt=_scanMode==='epic'
     ?`This is a photo of an Epic EMR screen. The patient demographic information is in the Storyboard panel — a tall, narrow, boxy section on the LEFT side of the screen with patient name, DOB, age stacked vertically.\nExtract ONLY:\n- name (Last, First format)\n- dob (MM/DD/YYYY format)\nDo NOT include any MRN or numeric ID.\nRespond ONLY with raw JSON. Example: {"name":"Smith, John","dob":"04/15/1962"}\nOmit any field that is unclear.`
@@ -372,15 +378,15 @@ async function doCapture(video){
   try{
     resp=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},{type:'text',text:prompt}]}]})});
     const data=await resp.json();
-    if(!resp.ok){setOcrStatus('⚠️ '+(data?.error?.message||resp.status),'error');document.getElementById('captureBtn').classList.add('manual-ready');return;}
+    if(!resp.ok){setOcrStatus('⚠️ '+(data?.error?.message||resp.status),'error');await restoreCamera();return;}
     const text=data.content.map(i=>i.text||'').join('').trim();
-    let parsed;try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}catch(e){setOcrStatus('⚠️ Could not read patient info. Try again with better lighting or move closer.','error');document.getElementById('captureBtn').classList.add('manual-ready');return;}
-    if(!parsed.name&&!parsed.dob&&!parsed.mrn){setOcrStatus('⚠️ No patient info detected. Aim at the header and try again.','error');document.getElementById('captureBtn').classList.add('manual-ready');return;}
-    const targetId=resolveTargetSlot();fillPatientSlot(targetId,parsed);
+    let parsed;try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}catch(e){setOcrStatus('⚠️ Could not read patient info. Try again with better lighting or move closer.','error');await restoreCamera();return;}
+    if(!parsed.name&&!parsed.dob&&!parsed.mrn){setOcrStatus('⚠️ No patient info detected. Aim at the header and try again.','error');await restoreCamera();return;}
+    const targetId=_activeScanId!==null?_activeScanId:resolveTargetSlot();fillPatientSlot(targetId,parsed);
     const filled=[parsed.name&&'Name',parsed.dob&&'DOB',parsed.mrn&&'MRN'].filter(Boolean);
     setOcrStatus('✓ Filled: '+filled.join(', '),'success');
     setTimeout(()=>closeScanner(),1400);
-  }catch(e){setOcrStatus('⚠️ Error: '+e.message,'error');document.getElementById('captureBtn').classList.add('manual-ready');}
+  }catch(e){setOcrStatus('⚠️ Error: '+e.message,'error');await restoreCamera();}
 }
 
 function resolveTargetSlot(){
