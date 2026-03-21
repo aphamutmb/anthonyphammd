@@ -254,30 +254,43 @@ function findEmptyPatientSlot(){for(const id of patients){const name=(document.g
 
 function renderPatients(){
   const list=document.getElementById('patientList');
-  list.innerHTML='';
-  if(!patients.length){list.innerHTML='<p style="color:#c0a090;font-size:.83rem;text-align:center;padding:10px 0">No patients added yet.</p>';return;}
-  patients.forEach((id,idx)=>{
-    const div=document.createElement('div');div.className='patient-entry';div.id='patient-'+id;
-    div.innerHTML='<div class="patient-num"><span>Patient '+(idx+1)+'</span><div style="display:flex;gap:8px;align-items:center">'+
-      '<button class="scan-btn" data-id="'+id+'" data-mode="epic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Scan Epic</button>'+
-      '<button class="scan-btn" data-id="'+id+'" data-mode="iknowmed" style="border-color:#7a3020;color:#7a3020"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Scan IKnowMed</button>'+
-      (patients.length>1?'<button class="remove-btn" data-id="'+id+'">✕</button>':'')+
-      '</div></div>'+
-      '<div class="form-row two"><div><label>Patient Name *</label><input type="text" id="pname-'+id+'" placeholder="Last, First"/></div>'+
-      '<div><label>Date of Birth *</label><div class="dob-wrap"><input type="text" id="pdob-text-'+id+'" placeholder="MM/DD/YYYY" maxlength="10" data-id="'+id+'" class="dob-text"/>'+
-      '<div class="dob-cal-btn"><input type="date" id="pdob-'+id+'" data-id="'+id+'" class="dob-picker" style="position:absolute;opacity:0;width:36px;height:36px;cursor:pointer;top:0;left:0"/>'+
-      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b5451b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div></div></div></div>'+
-      '<div class="form-row two"><div><label>Facility *</label><select id="pfac-'+id+'"><option value="">Select facility…</option>'+HOSPITALS.map(h=>'<option value="'+h+'">'+h+'</option>').join('')+'</select></div>'+
-      '<div><label>MRN <span style="color:#c0a090;font-weight:400">(optional)</span></label><input type="text" id="pmrn-'+id+'" placeholder="IKnowMed MRN"/></div></div>'+
-      '<div><label>Billing Codes *</label><div class="billing-grid" id="codes-'+id+'">'+CPT_CODES.map(c=>'<button class="code-btn" data-pid="'+id+'" data-code="'+c.code+'"><span class="code">'+c.code+'</span><span class="desc">'+c.desc+'</span></button>').join('')+'</div>'+
-      '<div class="selected-codes" id="tags-'+id+'"></div></div>';
-    list.appendChild(div);
-    div.querySelectorAll('.scan-btn').forEach(btn=>{btn.addEventListener('click',()=>openScanner(parseInt(btn.dataset.id),btn.dataset.mode));});
-    div.querySelectorAll('.remove-btn').forEach(btn=>{btn.addEventListener('click',()=>removePatient(parseInt(btn.dataset.id)));});
-    div.querySelectorAll('.dob-text').forEach(inp=>{inp.addEventListener('input',()=>syncDobFromText(parseInt(inp.dataset.id)));});
-    div.querySelectorAll('.dob-picker').forEach(inp=>{inp.addEventListener('change',()=>syncDobFromPicker(parseInt(inp.dataset.id)));});
-    div.querySelectorAll('.code-btn').forEach(btn=>{btn.addEventListener('click',()=>{btn.classList.toggle('selected');updateTags(parseInt(btn.dataset.pid));});});
+  // Remove entries for deleted patients
+  [...list.querySelectorAll('.patient-entry')].forEach(el=>{
+    if(!patients.includes(parseInt(el.id.replace('patient-','')))){el.remove();}
   });
+  // Add only new entries
+  patients.forEach((id,idx)=>{
+    let div=document.getElementById('patient-'+id);
+    if(!div){
+      div=document.createElement('div');div.className='patient-entry';div.id='patient-'+id;
+      div.innerHTML='<div class="patient-num"><span id="patient-label-'+id+'">Patient '+(idx+1)+'</span><div style="display:flex;gap:8px;align-items:center">'+
+        '<button class="scan-btn" data-id="'+id+'" data-mode="epic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Scan Epic</button>'+
+        '<button class="scan-btn" data-id="'+id+'" data-mode="iknowmed" style="border-color:#7a3020;color:#7a3020"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Scan IKnowMed</button>'+
+        '<button class="remove-btn" data-id="'+id+'" id="remove-btn-'+id+'" style="'+(patients.length>1?'':'display:none')+'">✕</button>'+
+        '</div></div>'+
+        '<div class="form-row two"><div><label>Patient Name *</label><input type="text" id="pname-'+id+'" placeholder="Last, First"/></div>'+
+        '<div><label>Date of Birth *</label><div class="dob-wrap"><input type="text" id="pdob-text-'+id+'" placeholder="MM/DD/YYYY" maxlength="10" data-id="'+id+'" class="dob-text"/>'+
+        '<div class="dob-cal-btn"><input type="date" id="pdob-'+id+'" data-id="'+id+'" class="dob-picker" style="position:absolute;opacity:0;width:36px;height:36px;cursor:pointer;top:0;left:0"/>'+
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b5451b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div></div></div></div>'+
+        '<div class="form-row two"><div><label>Facility *</label><select id="pfac-'+id+'"><option value="">Select facility…</option>'+HOSPITALS.map(h=>'<option value="'+h+'">'+h+'</option>').join('')+'</select></div>'+
+        '<div><label>MRN <span style="color:#c0a090;font-weight:400">(optional)</span></label><input type="text" id="pmrn-'+id+'" placeholder="IKnowMed MRN"/></div></div>'+
+        '<div><label>Billing Codes *</label><div class="billing-grid" id="codes-'+id+'">'+CPT_CODES.map(c=>'<button class="code-btn" data-pid="'+id+'" data-code="'+c.code+'"><span class="code">'+c.code+'</span><span class="desc">'+c.desc+'</span></button>').join('')+'</div>'+
+        '<div class="selected-codes" id="tags-'+id+'"></div></div>';
+      list.appendChild(div);
+      div.querySelectorAll('.scan-btn').forEach(btn=>{btn.addEventListener('click',()=>openScanner(parseInt(btn.dataset.id),btn.dataset.mode));});
+      div.querySelectorAll('.remove-btn').forEach(btn=>{btn.addEventListener('click',()=>removePatient(parseInt(btn.dataset.id)));});
+      div.querySelectorAll('.dob-text').forEach(inp=>{inp.addEventListener('input',()=>syncDobFromText(parseInt(inp.dataset.id)));});
+      div.querySelectorAll('.dob-picker').forEach(inp=>{inp.addEventListener('change',()=>syncDobFromPicker(parseInt(inp.dataset.id)));});
+      div.querySelectorAll('.code-btn').forEach(btn=>{btn.addEventListener('click',()=>{btn.classList.toggle('selected');updateTags(parseInt(btn.dataset.pid));});});
+    }
+    // Update label number and remove button visibility
+    const lbl=document.getElementById('patient-label-'+id);
+    if(lbl)lbl.textContent='Patient '+(idx+1);
+    const rmv=document.getElementById('remove-btn-'+id);
+    if(rmv)rmv.style.display=patients.length>1?'':'none';
+  });
+  // Show empty message if no patients
+  if(!patients.length){list.innerHTML='<p style="color:#c0a090;font-size:.83rem;text-align:center;padding:10px 0">No patients added yet.</p>';}
 }
 
 function syncDobFromText(id){const el=document.getElementById('pdob-text-'+id);let v=el.value.replace(/\D/g,'');if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2);if(v.length>5)v=v.slice(0,5)+'/'+v.slice(5,9);el.value=v;const parts=v.split('/');if(parts.length===3&&parts[2].length===4){document.getElementById('pdob-'+id).value=parts[2]+'-'+parts[0].padStart(2,'0')+'-'+parts[1].padStart(2,'0');}}
@@ -376,7 +389,11 @@ async function doCapture(video){
     :`This is a photo of an IKnowMed G2 EMR patient header — a horizontal banner at the top.\nExtract ALL of:\n- name (Last, First format)\n- dob (MM/DD/YYYY format)\n- mrn (IKnowMed patient ID number)\nRespond ONLY with raw JSON. Example: {"name":"Smith, John","dob":"04/15/1962","mrn":"7654321"}\nOmit any field that is unclear.`;
   let resp;
   try{
-    resp=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},{type:'text',text:prompt}]}]})});
+    const controller=new AbortController();
+    const timeoutId=setTimeout(()=>controller.abort(),20000); // 20s timeout
+    resp=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},{type:'text',text:prompt}]}]})});
+    clearTimeout(timeoutId);
+    setOcrStatus('🔄 Reading patient info…');
     const data=await resp.json();
     if(!resp.ok){setOcrStatus('⚠️ '+(data?.error?.message||resp.status),'error');await restoreCamera();return;}
     const text=data.content.map(i=>i.text||'').join('').trim();
@@ -386,7 +403,11 @@ async function doCapture(video){
     const filled=[parsed.name&&'Name',parsed.dob&&'DOB',parsed.mrn&&'MRN'].filter(Boolean);
     setOcrStatus('✓ Filled: '+filled.join(', '),'success');
     setTimeout(()=>closeScanner(),1400);
-  }catch(e){setOcrStatus('⚠️ Error: '+e.message,'error');await restoreCamera();}
+  }catch(e){
+    if(e.name==='AbortError'){setOcrStatus('⚠️ Request timed out. Check your connection and try again.','error');}
+    else{setOcrStatus('⚠️ Error: '+e.message,'error');}
+    await restoreCamera();
+  }
 }
 
 function resolveTargetSlot(){
