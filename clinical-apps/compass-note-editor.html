@@ -310,8 +310,8 @@
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const API_URL      = 'https://ahl8zh0plk.execute-api.us-east-1.amazonaws.com/default/compass-bedrock-proxy';
-const MODEL_SONNET = 'claude-sonnet-4-20250514';
-const MODEL_OPUS   = 'claude-opus-4-20250514';
+const MODEL_SONNET = 'us.anthropic.claude-sonnet-4-20250514-v1:0';
+const MODEL_OPUS   = 'us.anthropic.claude-opus-4-20250514-v1:0';
 const MIN_NOTES    = 5;
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -333,11 +333,11 @@ const sg   = (k, d=null) => { try { const v=localStorage.getItem(k); return v?JS
 const ss   = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){console.error(e);} };
 
 // ── API ───────────────────────────────────────────────────────────────────────
-async function callClaude(system, user, model=MODEL_SONNET) {
+async function callClaude(system, user, model=MODEL_SONNET, max_tokens=1000) {
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, max_tokens: 1000, system,
+    body: JSON.stringify({ model, max_tokens, system,
       messages: [{ role:'user', content: user }] })
   });
   const data = await res.json();
@@ -672,7 +672,7 @@ Build a comprehensive Prime Directive. Cover each of the following with specific
 
 Be exhaustive and specific. Format as a numbered list of precise rules.`;
 
-    directive = await callClaude(sys, usr, MODEL_OPUS);
+    directive = await callClaude(sys, usr, MODEL_OPUS, 4000);
     ss(`${pid(selected)}_dir`, directive);
     showDir = true;
     showToast('Prime Directive generated', 'success');
@@ -704,7 +704,7 @@ ${recentText}
 
 Identify any consistent new patterns or deviations appearing in ${MIN_NOTES}+ recent notes. If meaningful changes exist, update the Prime Directive to reflect them. If no significant changes, return the original unchanged. Return ONLY the Prime Directive text, no preamble.`;
 
-    directive = await callClaude(sys, usr, MODEL_OPUS);
+    directive = await callClaude(sys, usr, MODEL_OPUS, 4000);
     ss(`${pid(selected)}_dir`, directive);
     showToast('Prime Directive updated from recent patterns', 'success');
     renderDirectiveCard();
