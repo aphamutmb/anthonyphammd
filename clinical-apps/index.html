@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compass Oncology | Clinical Apps</title>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rust: #b94f2a;
+      --rust-dark: #8c3a1e;
+      --teal: #1a5c5c;
+      --teal-light: #2a7a7a;
+      --cream: #f9f5f0;
+      --text: #1a1a1a;
+      --muted: #6b6b6b;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--rust);
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    header h1 {
+      font-family: 'Crimson Pro', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: white;
+      letter-spacing: 0.01em;
+    }
+
+    header p {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-family: 'Crimson Pro', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--teal);
+      margin-bottom: 48px;
+      text-align: center;
+    }
+
+    .cards {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 680px;
+      width: 100%;
+    }
+
+    .card {
+      flex: 1;
+      min-width: 260px;
+      max-width: 300px;
+      background: white;
+      border-radius: 16px;
+      padding: 36px 28px;
+      text-decoration: none;
+      color: var(--text);
+      border: 2px solid transparent;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--rust);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+
+    .card:hover {
+      border-color: var(--rust);
+      box-shadow: 0 8px 28px rgba(185,79,42,0.15);
+      transform: translateY(-3px);
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--cream);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--rust);
+    }
+
+    .card h3 {
+      font-family: 'Crimson Pro', serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--teal);
+    }
+
+    .card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .card-arrow {
+      margin-top: auto;
+      font-size: 0.8rem;
+      color: var(--rust);
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid rgba(0,0,0,0.07);
+    }
+
+    @media (max-width: 560px) {
+      header { padding: 20px 24px; }
+      h2 { font-size: 1.7rem; }
+      .card { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="https://www.dropbox.com/scl/fi/b10nic96m4i5q07ome9p4/compass-logo-no-background.png?rlkey=x80v25e6rr8axrlg67564ab65&st=r2c30ey3&raw=1"
+      alt="Compass Oncology"
+      style="height:42px;width:auto;filter:brightness(0) invert(1)"
+      onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline'"/>
+    <span id="logoFallback" style="display:none;color:#fff;font-size:1rem;font-weight:700;letter-spacing:.04em">COMPASS ONCOLOGY</span>
+    <div style="border-left:1px solid rgba(255,255,255,.25);padding-left:14px;margin-left:4px">
+      <h1>Compass Oncology</h1>
+      <p>Clinical Applications</p>
+    </div>
+  </header>
+
+  <main>
+    <p class="section-label">Available Tools</p>
+    <h2>Select an Application</h2>
+
+    <div class="cards">
+
+      <a href="billing-app.html" class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="2"/>
+            <line x1="2" y1="10" x2="22" y2="10"/>
+            <line x1="6" y1="15" x2="10" y2="15"/>
+          </svg>
+        </div>
+        <h3>Billing App</h3>
+        <p>Submit daily physician charges and manage patient billing entries.</p>
+        <span class="card-arrow">Open app →</span>
+      </a>
+
+      <a href="note-editor.html" class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <line x1="10" y1="9" x2="8" y2="9"/>
+          </svg>
+        </div>
+        <h3>Note Editor</h3>
+        <p>Create and manage clinical notes with AI-assisted documentation.</p>
+        <span class="card-arrow">Open app →</span>
+      </a>
+
+    </div>
+  </main>
+
+  <footer>
+    &copy; Compass Oncology &mdash; Internal Use Only
+  </footer>
+
+</body>
+</html>
