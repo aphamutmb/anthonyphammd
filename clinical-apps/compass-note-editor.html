@@ -342,7 +342,10 @@ async function callClaude(system, user, model=MODEL_SONNET, max_tokens=1000) {
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error.message);
-  return data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+  // Handle both direct Anthropic and Bedrock response formats
+  const content = data.content || (data.output && data.output.message && data.output.message.content);
+  if (!content) throw new Error('No content in response: ' + JSON.stringify(data).slice(0, 200));
+  return content.filter(b => b.type === 'text').map(b => b.text).join('');
 }
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
