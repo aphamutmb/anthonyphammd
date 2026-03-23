@@ -217,7 +217,7 @@
         <!-- Add note card -->
         <div class="card">
           <div class="card-title">◎ Add Training Note</div>
-          <div class="field-hint" id="training-hint">Paste a sample note demonstrating this physician's preferred formatting, structure, and style. Include examples with bold, underlined, or indented content.</div>
+          <div class="field-hint" id="training-hint">Paste a sample note demonstrating this physician's preferred formatting, structure, and style. Patient names and other identifying information will be automatically de-identified before saving.</div>
           <textarea id="note-input" style="min-height:180px" placeholder="Paste a representative physician note here…"></textarea>
           <div class="btn-row">
             <button class="btn btn-primary" id="btn-add-note">+ Add Training Note</button>
@@ -577,17 +577,41 @@ function updateTrainingProgress() {
   genBtn.textContent = directive ? 'Regenerate Directive' : 'Generate Directive';
 }
 
-function addTrainingNote() {
+async function addTrainingNote() {
   const txt = document.getElementById('note-input').value.trim();
   if (!txt || !selected) return;
-  training.push({ text: txt, ts: Date.now() });
-  ss(`${pid(selected)}_train`, training);
-  document.getElementById('note-input').value = '';
-  showToast(`Training note #${training.length} saved`, 'success');
-  renderNotesList();
-  renderDirectiveCard();
-  updateTrainingProgress();
-  updateTopbar();
+  setLoading(true, 'De-identifying note before saving…');
+  try {
+    const sys = `You are a HIPAA-compliant medical note de-identification engine. Your sole job is to find and replace all protected health information (PHI) in the note with neutral placeholders. You must preserve all medical content, formatting, structure, punctuation, and clinical terminology exactly — only replace PHI.
+
+Replace the following with the corresponding placeholder:
+- Patient full names → [PATIENT]
+- Physician/provider names → [PHYSICIAN]  
+- Hospital, clinic, or facility names → [FACILITY]
+- Specific dates (e.g. March 5, 2024 or 3/5/24) → [DATE]
+- Ages when stated as exact numbers → [AGE]
+- Geographic locations smaller than state → [LOCATION]
+- Phone numbers, fax numbers → [PHONE]
+- Medical record numbers, account numbers → [MRN]
+
+Do NOT replace: medical terms, drug names, dosages, lab values, cancer types, treatment regimens, or any clinical content.
+Return ONLY the de-identified note text with no preamble, explanation, or commentary.`;
+
+    const usr = `De-identify this medical note:\n\n${txt}`;
+    const deidentified = await callClaude(sys, usr, MODEL_SONNET, 2000);
+
+    training.push({ text: deidentified, ts: Date.now() });
+    ss(`${pid(selected)}_train`, training);
+    document.getElementById('note-input').value = '';
+    showToast(`Training note #${training.length} saved (de-identified)`, 'success');
+    renderNotesList();
+    renderDirectiveCard();
+    updateTrainingProgress();
+    updateTopbar();
+  } catch(e) {
+    showToast(`De-identification error: ${e.message}`, 'error');
+  }
+  setLoading(false);
 }
 
 function removeTrainingNote(idx) {
