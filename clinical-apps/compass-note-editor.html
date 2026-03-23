@@ -653,9 +653,9 @@ async function generateDirective() {
   if (!selected || training.length < MIN_NOTES) return;
   setLoading(true, 'Analyzing notes and building Prime Directive…');
   try {
-    // Truncate each note to 4000 chars to stay within token limits
+    // Truncate each note to 1500 chars to stay within token limits
     const notesText = training.map((n,i) =>
-      `=== NOTE ${i+1} — ${new Date(n.ts).toLocaleDateString()} ===\n${n.text.slice(0, 4000)}${n.text.length > 4000 ? '\n[truncated for length]' : ''}`
+      `=== NOTE ${i+1} — ${new Date(n.ts).toLocaleDateString()} ===\n${n.text.slice(0, 1500)}${n.text.length > 1500 ? '\n[truncated for length]' : ''}`
     ).join('\n\n');
 
     const sys = `You are a precision medical note style analyst. Extract exact formatting and style patterns from physician notes to build a "Prime Directive" — a definitive, exhaustive style guide used to reformat other notes identically.`;
@@ -676,7 +676,7 @@ Build a comprehensive Prime Directive. Cover each of the following with specific
 
 Be exhaustive and specific. Format as a numbered list of precise rules.`;
 
-    directive = await callClaude(sys, usr, MODEL_SONNET, 4000);
+    directive = await callClaude(sys, usr, MODEL_SONNET, 2000);
     ss(`${pid(selected)}_dir`, directive);
     showDir = true;
     showToast('Prime Directive generated', 'success');
