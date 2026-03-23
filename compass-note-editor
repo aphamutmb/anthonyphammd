@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Compass AI — Note Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ── RESET & BASE ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #f5f1ed; }
+  ::-webkit-scrollbar-thumb { background: #d4a88a; border-radius: 3px; }
+  html, body { height: 100%; overflow: hidden; }
+  body { background: #faf7f4; font-family: 'Source Sans 3', sans-serif; font-size: 13px; color: #2c1f17; }
+
+  /* ── LAYOUT ── */
+  #app { display: flex; height: 100vh; overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width: 224px; background: #C94E1E; display: flex; flex-direction: column; box-shadow: 2px 0 16px rgba(160,50,10,0.22); flex-shrink: 0; }
+  .sidebar-logo { padding: 18px 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.15); }
+  .sidebar-logo img { width: 100%; max-width: 160px; height: auto; display: block; filter: brightness(0) invert(1); }
+  .sidebar-logo-sub { font-size: 9.5px; color: rgba(255,255,255,0.55); margin-top: 6px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+  .sidebar-section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.22em; color: rgba(255,255,255,0.4); text-transform: uppercase; padding: 14px 16px 6px; }
+  .sidebar-list { flex: 1; overflow-y: auto; padding: 0 8px; }
+  .phys-btn { width: 100%; padding: 9px 10px; border-radius: 6px; cursor: pointer; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: rgba(255,255,255,0.7); text-align: left; font-family: 'Source Sans 3', sans-serif; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: space-between; transition: all 0.15s; }
+  .phys-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .phys-btn.active { background: rgba(255,255,255,0.2); color: #fff; border-color: rgba(255,255,255,0.25); }
+  .phys-btn .del-x { color: rgba(255,255,255,0.3); font-size: 17px; line-height: 1; padding: 0 2px; }
+  .phys-btn:hover .del-x { color: rgba(255,255,255,0.75); }
+  .sidebar-empty { font-size: 12px; color: rgba(255,255,255,0.35); padding: 8px 4px; line-height: 1.6; }
+  .sidebar-add { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.15); }
+  .add-input { width: 100%; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 5px; color: #fff; padding: 8px 10px; font-size: 12.5px; font-family: 'Source Sans 3', sans-serif; outline: none; transition: all 0.15s; }
+  .add-input:focus { border-color: rgba(255,255,255,0.55); background: rgba(255,255,255,0.18); }
+  .add-input::placeholder { color: rgba(255,255,255,0.35); }
+  .btn-add-phys { width: 100%; margin-top: 7px; padding: 8px; background: #1E3D6B; border: none; border-radius: 5px; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Source Sans 3', sans-serif; transition: background 0.15s; }
+  .btn-add-phys:hover { background: #162e52; }
+
+  /* ── MAIN ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+  .topbar { background: #fff; border-bottom: 2px solid #e8d5c4; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 54px; box-shadow: 0 1px 6px rgba(180,80,20,0.07); flex-shrink: 0; }
+  .topbar-name { font-size: 15px; font-weight: 600; color: #C94E1E; }
+  .topbar-name.empty { color: #c8b0a0; font-style: italic; font-weight: 400; }
+  .topbar-stats { display: flex; gap: 8px; flex-wrap: wrap; }
+  .stat-pill { background: #fdf0e8; border: 1px solid #e8c4a8; border-radius: 20px; padding: 3px 11px; font-size: 11px; font-family: 'DM Mono', monospace; color: #a33a10; display: inline-flex; align-items: center; gap: 4px; }
+  .stat-pill.blue { color: #1E3D6B; border-color: #a8bcd8; background: #eaf0f8; }
+  .stat-pill.amber { color: #8a4010; border-color: #d8b090; background: #fce8d8; }
+
+  /* ── TABS ── */
+  .tab-bar { display: flex; padding: 0 24px; background: #fff; border-bottom: 1px solid #e8d5c4; flex-shrink: 0; }
+  .tab-btn { padding: 12px 20px; cursor: pointer; font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em; color: #a08070; border-bottom: 3px solid transparent; background: transparent; border-left: none; border-right: none; border-top: none; font-family: 'Source Sans 3', sans-serif; text-transform: uppercase; transition: all 0.2s; }
+  .tab-btn:hover { color: #C94E1E; }
+  .tab-btn.active { color: #C94E1E; border-bottom-color: #C94E1E; }
+
+  /* ── CONTENT ── */
+  .content { flex: 1; overflow-y: auto; padding: 20px 24px; background: #faf7f4; }
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #c8b0a0; gap: 12px; }
+  .empty-state-icon { font-size: 40px; }
+
+  /* ── CARDS ── */
+  .card { background: #fff; border: 1px solid #e8d5c4; border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 1px 5px rgba(180,80,20,0.05); }
+  .card-title { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; color: #C94E1E; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+  .field-hint { font-size: 12.5px; color: #7a6050; margin-bottom: 10px; line-height: 1.6; }
+  .field-hint strong { color: #1E3D6B; }
+
+  /* ── FORM ── */
+  textarea { width: 100%; background: #fdf8f5; border: 1px solid #e0c8b8; border-radius: 6px; color: #2c1f17; padding: 10px 12px; font-size: 12.5px; resize: vertical; font-family: 'DM Mono', monospace; outline: none; line-height: 1.7; transition: border-color 0.15s; }
+  textarea:focus { border-color: #C94E1E; box-shadow: 0 0 0 3px rgba(201,78,30,0.08); }
+  textarea::placeholder { color: #c8b0a0; }
+
+  /* ── BUTTONS ── */
+  .btn { padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 12.5px; font-weight: 600; border: 1px solid; font-family: 'Source Sans 3', sans-serif; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; transition: all 0.15s; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: #C94E1E; border-color: #C94E1E; color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #a33a10; border-color: #a33a10; }
+  .btn-navy { background: #1E3D6B; border-color: #1E3D6B; color: #fff; }
+  .btn-navy:hover:not(:disabled) { background: #162e52; }
+  .btn-amber { background: #fdf0e8; border-color: #e8b898; color: #8a4010; }
+  .btn-amber:hover:not(:disabled) { background: #fce4d0; }
+  .btn-ghost { background: transparent; border-color: #e0c8b8; color: #8a6050; }
+  .btn-ghost:hover:not(:disabled) { background: #fdf0e8; border-color: #d0a888; color: #C94E1E; }
+  .btn-danger { background: #fff5f5; border-color: #f0aaaa; color: #c03030; }
+  .btn-danger:hover:not(:disabled) { background: #ffeaea; }
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
+
+  /* ── PROGRESS ── */
+  .progress-track { background: #e8d5c4; border-radius: 3px; height: 5px; margin-top: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #C94E1E, #e87840); transition: width 0.4s; }
+
+  /* ── NOTE ITEMS ── */
+  .note-item { background: #fdf8f5; border: 1px solid #e8d5c4; border-radius: 6px; padding: 12px 14px; margin-bottom: 8px; }
+  .note-item-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .note-meta { font-size: 10.5px; font-family: 'DM Mono', monospace; color: #a08070; }
+  .note-preview { font-size: 12px; color: #7a6050; margin-top: 6px; line-height: 1.5; }
+  .note-full { font-size: 12px; color: #4a3028; margin-top: 10px; white-space: pre-wrap; line-height: 1.7; font-family: 'DM Mono', monospace; max-height: 300px; overflow-y: auto; }
+  .note-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  /* ── DIRECTIVE ── */
+  .directive-box { background: #fdf8f5; border: 1px solid #e0c8b8; border-left: 3px solid #C94E1E; border-radius: 6px; padding: 14px; margin-top: 10px; font-size: 12px; color: #4a3028; line-height: 1.9; font-family: 'DM Mono', monospace; white-space: pre-wrap; max-height: 360px; overflow-y: auto; }
+  .directive-status { font-size: 11.5px; color: #a08070; margin-top: 8px; }
+  .directive-status.active { color: #1E3D6B; font-weight: 600; }
+
+  /* ── OUTPUT RENDER ── */
+  .output-render { background: #fdfbf9; border: 1px solid #e0c8b8; border-left: 3px solid #1E3D6B; border-radius: 6px; padding: 18px; min-height: 160px; line-height: 2; color: #2c1f17; font-size: 13.5px; font-family: 'Source Sans 3', sans-serif; }
+  .output-render strong { color: #C94E1E; }
+  .output-render u { text-decoration-color: #1E3D6B; }
+
+  /* ── INLINE ALERT ── */
+  .inline-alert { border-radius: 6px; padding: 10px 12px; font-size: 12.5px; line-height: 1.6; display: flex; gap: 8px; margin-bottom: 14px; }
+  .inline-alert.warn { background: #fdf0e8; border: 1px solid #e8b898; border-left: 3px solid #C94E1E; color: #a33a10; }
+  .inline-alert.info { background: #eaf0f8; border: 1px solid #a8bcd8; border-left: 3px solid #1E3D6B; color: #1E3D6B; }
+
+  /* ── TOAST ── */
+  #toast { position: fixed; bottom: 22px; right: 22px; border-radius: 8px; padding: 10px 16px; font-size: 12.5px; color: #fff; display: none; align-items: center; gap: 8px; z-index: 9999; max-width: 320px; box-shadow: 0 4px 16px rgba(160,50,10,0.25); animation: slideUp 0.2s ease; }
+  #toast.show { display: flex; }
+  #toast.success { background: #1E3D6B; }
+  #toast.error   { background: #c03030; }
+  #toast.warn    { background: #a33a10; }
+  #toast.info    { background: #C94E1E; }
+  @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* ── LOADING OVERLAY ── */
+  #loading-overlay { position: fixed; inset: 0; background: rgba(250,247,244,0.85); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(3px); }
+  #loading-overlay.show { display: flex; }
+  .loading-card { background: #fff; border: 1px solid #e8d5c4; border-radius: 12px; padding: 28px 36px; text-align: center; box-shadow: 0 8px 32px rgba(160,50,10,0.1); }
+  .loading-card img { width: 140px; height: auto; margin-bottom: 14px; opacity: 0.85; }
+  .loading-text { font-size: 13px; color: #8a5a48; font-family: 'DM Mono', monospace; }
+
+  /* ── CONFIRM MODAL ── */
+  #confirm-modal { position: fixed; inset: 0; background: rgba(250,247,244,0.8); display: none; align-items: center; justify-content: center; z-index: 9500; backdrop-filter: blur(2px); }
+  #confirm-modal.show { display: flex; }
+  .confirm-card { background: #fff; border: 1px solid #f0aaaa; border-radius: 10px; padding: 24px; max-width: 320px; width: 90%; box-shadow: 0 6px 24px rgba(0,0,0,0.1); }
+  .confirm-title { font-size: 15px; font-weight: 700; color: #c03030; margin-bottom: 8px; }
+  .confirm-msg { font-size: 13px; color: #7a6050; margin-bottom: 18px; line-height: 1.6; }
+  .confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* ── MISC ── */
+  .pattern-badge { background: #fdf0e8; border: 1px solid #e8b898; border-radius: 20px; padding: 2px 9px; font-size: 10px; font-family: 'DM Mono', monospace; color: #a33a10; }
+  .card-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .hidden { display: none !important; }
+  hr.sep { border: none; border-top: 1px solid #e8d5c4; margin: 12px 0; }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <img src="https://www.compassoncology.com/hs-fs/hubfs/logo.png?width=426&height=140&name=logo.png" alt="Compass Oncology" />
+      <div class="sidebar-logo-sub">AI Note Intelligence</div>
+    </div>
+    <div class="sidebar-section-label">Physicians</div>
+    <div class="sidebar-list" id="phys-list">
+      <div class="sidebar-empty" id="phys-empty">No physicians yet. Add one below.</div>
+    </div>
+    <div class="sidebar-add">
+      <input class="add-input" id="new-name-input" placeholder="Dr. Name…" />
+      <button class="btn-add-phys" id="btn-add-phys">+ Add Physician</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-name empty" id="topbar-name">No Physician Selected</div>
+      <div class="topbar-stats" id="topbar-stats"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-training-btn" onclick="switchTab('training')">◈ Training</button>
+      <button class="tab-btn" id="tab-reformat-btn" onclick="switchTab('reformat')">✦ Reformat</button>
+    </div>
+
+    <!-- Content -->
+    <div class="content" id="content">
+
+      <!-- Empty state -->
+      <div class="empty-state" id="empty-state">
+        <div class="empty-state-icon">✦</div>
+        <div>Select or add a physician to begin</div>
+      </div>
+
+      <!-- ── TRAINING TAB ── -->
+      <div id="tab-training" class="hidden">
+
+        <!-- Add note card -->
+        <div class="card">
+          <div class="card-title">◎ Add Training Note</div>
+          <div class="field-hint" id="training-hint">Paste a sample note demonstrating this physician's preferred formatting, structure, and style. Include examples with bold, underlined, or indented content.</div>
+          <textarea id="note-input" style="min-height:180px" placeholder="Paste a representative physician note here…"></textarea>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-add-note">+ Add Training Note</button>
+            <span id="training-counter" style="font-size:11.5px;color:#a08070"></span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="training-progress" style="width:0%"></div></div>
+        </div>
+
+        <!-- Saved notes -->
+        <div class="card hidden" id="saved-notes-card">
+          <div class="card-title" id="saved-notes-title">◉ Saved Training Notes</div>
+          <div id="notes-list"></div>
+        </div>
+
+        <!-- Prime Directive card -->
+        <div class="card">
+          <div class="card-header-row">
+            <div class="card-title" style="margin-bottom:0">◈ Prime Directive</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+              <button class="btn btn-primary" id="btn-generate" disabled>Generate Directive</button>
+              <button class="btn btn-ghost hidden" id="btn-toggle-dir">View</button>
+              <button class="btn btn-ghost hidden" id="btn-edit-dir">Edit</button>
+              <button class="btn btn-amber hidden" id="btn-auto-update">Auto-Update</button>
+            </div>
+          </div>
+          <div class="directive-status" id="directive-status">⚠ Add 5 training notes to enable generation.</div>
+          <div class="hidden" id="directive-view-wrap">
+            <div class="directive-box" id="directive-box"></div>
+          </div>
+          <div class="hidden" id="directive-edit-wrap">
+            <textarea id="directive-edit-ta" style="min-height:280px;margin-top:10px"></textarea>
+            <div class="btn-row">
+              <button class="btn btn-navy" id="btn-save-dir">Save Changes</button>
+              <button class="btn btn-ghost" id="btn-cancel-edit">Cancel</button>
+            </div>
+          </div>
+          <div class="hidden inline-alert warn" id="auto-update-hint" style="margin-top:10px;margin-bottom:0">
+            <span>⊕</span><span id="auto-update-hint-text"></span>
+          </div>
+        </div>
+
+      </div><!-- end training tab -->
+
+      <!-- ── REFORMAT TAB ── -->
+      <div id="tab-reformat" class="hidden">
+
+        <!-- No directive warning -->
+        <div class="inline-alert warn hidden" id="no-directive-alert">
+          <span>⚠</span><span id="no-directive-msg"></span>
+        </div>
+
+        <!-- Input card -->
+        <div class="card">
+          <div class="card-title">◎ Paste Full Note</div>
+          <div class="field-hint">Paste the entire note — all sections included. The system will automatically extract and reformat only <strong>INTERIM HISTORY</strong> and <strong>ASSESSMENT AND PLAN</strong>.</div>
+          <textarea id="raw-note-input" style="min-height:220px" placeholder="Paste complete note here (all sections — the system extracts what's needed)…"></textarea>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-reformat">Reformat Note →</button>
+            <button class="btn btn-ghost" id="btn-clear-reformat">Clear</button>
+          </div>
+        </div>
+
+        <!-- Output card -->
+        <div class="card hidden" id="output-card">
+          <div class="card-header-row">
+            <div class="card-title" style="margin-bottom:0">✦ Reformatted Output</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-navy" id="btn-copy-rich">⧉ Copy Rich Text</button>
+              <button class="btn btn-ghost" id="btn-copy-plain">Copy Plain</button>
+            </div>
+          </div>
+          <div class="output-render" id="output-render"></div>
+          <div style="margin-top:10px;font-size:11.5px;color:#a08070;font-family:'DM Mono',monospace" id="output-footer"></div>
+        </div>
+
+        <!-- Output history card -->
+        <div class="card hidden" id="history-card">
+          <div class="card-title">◉ Output History</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap" id="history-pills"></div>
+          <div style="margin-top:10px;font-size:12px;line-height:1.6" id="history-msg"></div>
+          <div class="progress-track"><div class="progress-fill" id="history-progress" style="width:0%"></div></div>
+        </div>
+
+      </div><!-- end reformat tab -->
+
+    </div><!-- end content -->
+  </div><!-- end main -->
+</div><!-- end app -->
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="loading-card">
+    <img src="https://www.compassoncology.com/hs-fs/hubfs/logo.png?width=426&height=140&name=logo.png" alt="Compass Oncology" />
+    <div class="loading-text" id="loading-text">Processing…</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- CONFIRM MODAL -->
+<div id="confirm-modal">
+  <div class="confirm-card">
+    <div class="confirm-title">Remove Physician</div>
+    <div class="confirm-msg" id="confirm-msg"></div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" id="confirm-ok">Remove</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const API_URL      = '/.netlify/functions/claude-proxy';
+const MODEL_SONNET = 'claude-sonnet-4-20250514';
+const MODEL_OPUS   = 'claude-opus-4-20250514';
+const MIN_NOTES    = 5;
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let physicians   = [];
+let selected     = null;
+let training     = [];
+let directive    = '';
+let outputs      = [];
+let showDir      = false;
+let editingDir   = false;
+let expandedNote = null;
+let activeTab    = 'training';
+let toastTimer   = null;
+let confirmCallback = null;
+
+// ── STORAGE ───────────────────────────────────────────────────────────────────
+const pid  = n => `mn_${n.replace(/\W+/g,'_').toLowerCase()}`;
+const sg   = (k, d=null) => { try { const v=localStorage.getItem(k); return v?JSON.parse(v):d; } catch{return d;} };
+const ss   = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){console.error(e);} };
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function callClaude(system, user, model=MODEL_SONNET) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model, max_tokens: 1000, system,
+      messages: [{ role:'user', content: user }] })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.className = `show ${type}`;
+  t.textContent = msg;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className=''; }, 3500);
+}
+
+// ── LOADING ───────────────────────────────────────────────────────────────────
+function setLoading(on, msg='') {
+  const ol = document.getElementById('loading-overlay');
+  ol.classList.toggle('show', on);
+  if (msg) document.getElementById('loading-text').textContent = msg;
+}
+
+// ── CONFIRM MODAL ─────────────────────────────────────────────────────────────
+function openConfirm(msg, cb) {
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-modal').classList.add('show');
+  confirmCallback = cb;
+}
+function closeConfirm() {
+  document.getElementById('confirm-modal').classList.remove('show');
+  confirmCallback = null;
+}
+document.getElementById('confirm-ok').onclick = () => {
+  if (confirmCallback) confirmCallback();
+  closeConfirm();
+};
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function init() {
+  physicians = sg('mn_physicians', []);
+  renderPhysicianList();
+  if (physicians.length > 0) selectPhysician(physicians[0]);
+
+  document.getElementById('btn-add-phys').onclick = addPhysician;
+  document.getElementById('new-name-input').addEventListener('keydown', e => { if(e.key==='Enter') addPhysician(); });
+  document.getElementById('btn-add-note').onclick = addTrainingNote;
+  document.getElementById('btn-generate').onclick = generateDirective;
+  document.getElementById('btn-toggle-dir').onclick = toggleDirectiveView;
+  document.getElementById('btn-edit-dir').onclick = startEditDirective;
+  document.getElementById('btn-save-dir').onclick = saveDirectiveEdit;
+  document.getElementById('btn-cancel-edit').onclick = cancelEditDirective;
+  document.getElementById('btn-auto-update').onclick = autoUpdateDirective;
+  document.getElementById('btn-reformat').onclick = reformatNote;
+  document.getElementById('btn-clear-reformat').onclick = clearReformat;
+  document.getElementById('btn-copy-rich').onclick = copyRich;
+  document.getElementById('btn-copy-plain').onclick = copyPlain;
+}
+
+// ── PHYSICIANS ────────────────────────────────────────────────────────────────
+function renderPhysicianList() {
+  const list = document.getElementById('phys-list');
+  const empty = document.getElementById('phys-empty');
+  // Clear existing buttons (keep empty div)
+  [...list.querySelectorAll('.phys-btn')].forEach(b=>b.remove());
+  empty.classList.toggle('hidden', physicians.length > 0);
+
+  physicians.forEach(name => {
+    const btn = document.createElement('button');
+    btn.className = `phys-btn${name===selected?' active':''}`;
+    btn.innerHTML = `<span>${esc(name)}</span><span class="del-x" title="Remove">×</span>`;
+    btn.querySelector('span:first-child').onclick = () => selectPhysician(name);
+    btn.querySelector('.del-x').onclick = (e) => {
+      e.stopPropagation();
+      openConfirm(`Remove "${name}" and all their training data? This cannot be undone.`, () => deletePhysician(name));
+    };
+    list.appendChild(btn);
+  });
+}
+
+function addPhysician() {
+  const name = document.getElementById('new-name-input').value.trim();
+  if (!name || physicians.includes(name)) return;
+  physicians.push(name);
+  ss('mn_physicians', physicians);
+  document.getElementById('new-name-input').value = '';
+  renderPhysicianList();
+  selectPhysician(name);
+  showToast(`Profile created for ${name}`, 'success');
+}
+
+function deletePhysician(name) {
+  physicians = physicians.filter(p => p !== name);
+  ss('mn_physicians', physicians);
+  if (selected === name) {
+    selected = null;
+    training = []; directive = ''; outputs = [];
+    if (physicians.length > 0) selectPhysician(physicians[0]);
+    else renderEmpty();
+  }
+  renderPhysicianList();
+  showToast(`Removed ${name}`, 'warn');
+}
+
+function selectPhysician(name) {
+  selected = name;
+  training  = sg(`${pid(name)}_train`, []);
+  directive = sg(`${pid(name)}_dir`, '');
+  outputs   = sg(`${pid(name)}_out`, []);
+  showDir   = false; editingDir = false; expandedNote = null;
+
+  renderPhysicianList();
+  updateTopbar();
+  renderTrainingTab();
+  renderReformatTab();
+  document.getElementById('empty-state').classList.add('hidden');
+  switchTab(activeTab);
+}
+
+function renderEmpty() {
+  document.getElementById('empty-state').classList.remove('hidden');
+  document.getElementById('tab-training').classList.add('hidden');
+  document.getElementById('tab-reformat').classList.add('hidden');
+  document.getElementById('topbar-name').textContent = 'No Physician Selected';
+  document.getElementById('topbar-name').className = 'topbar-name empty';
+  document.getElementById('topbar-stats').innerHTML = '';
+}
+
+// ── TOPBAR ────────────────────────────────────────────────────────────────────
+function updateTopbar() {
+  const el = document.getElementById('topbar-name');
+  el.textContent = selected || 'No Physician Selected';
+  el.className   = selected ? 'topbar-name' : 'topbar-name empty';
+
+  const stats = document.getElementById('topbar-stats');
+  if (!selected) { stats.innerHTML=''; return; }
+  const recentCount = getRecentCount();
+  let html = `<span class="stat-pill">◎ ${training.length} training note${training.length!==1?'s':''}</span>`;
+  if (directive) html += `<span class="stat-pill blue">✓ Directive Active</span>`;
+  if (recentCount >= MIN_NOTES) html += `<span class="stat-pill amber">⊕ ${recentCount} recent outputs</span>`;
+  stats.innerHTML = html;
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-training-btn').classList.toggle('active', tab==='training');
+  document.getElementById('tab-reformat-btn').classList.toggle('active', tab==='reformat');
+  document.getElementById('tab-training').classList.toggle('hidden', tab!=='training');
+  document.getElementById('tab-reformat').classList.toggle('hidden', tab!=='reformat');
+  if (!selected) {
+    document.getElementById('tab-training').classList.add('hidden');
+    document.getElementById('tab-reformat').classList.add('hidden');
+    document.getElementById('empty-state').classList.remove('hidden');
+  } else {
+    document.getElementById('empty-state').classList.add('hidden');
+  }
+}
+
+// ── TRAINING TAB ──────────────────────────────────────────────────────────────
+function renderTrainingTab() {
+  renderNotesList();
+  renderDirectiveCard();
+  updateTrainingProgress();
+}
+
+function updateTrainingProgress() {
+  const pct = Math.min((training.length / MIN_NOTES) * 100, 100);
+  document.getElementById('training-progress').style.width = `${pct}%`;
+
+  const counter = document.getElementById('training-counter');
+  if (training.length < MIN_NOTES) {
+    counter.style.color = '#a08070';
+    counter.textContent = `${training.length}/${MIN_NOTES} minimum to generate directive`;
+  } else {
+    counter.style.color = '#1E3D6B';
+    counter.style.fontWeight = '600';
+    counter.textContent = `✓ Ready to generate`;
+  }
+
+  const genBtn = document.getElementById('btn-generate');
+  genBtn.disabled = training.length < MIN_NOTES;
+  genBtn.textContent = directive ? 'Regenerate Directive' : 'Generate Directive';
+}
+
+function addTrainingNote() {
+  const txt = document.getElementById('note-input').value.trim();
+  if (!txt || !selected) return;
+  training.push({ text: txt, ts: Date.now() });
+  ss(`${pid(selected)}_train`, training);
+  document.getElementById('note-input').value = '';
+  showToast(`Training note #${training.length} saved`, 'success');
+  renderNotesList();
+  renderDirectiveCard();
+  updateTrainingProgress();
+  updateTopbar();
+}
+
+function removeTrainingNote(idx) {
+  training.splice(idx, 1);
+  ss(`${pid(selected)}_train`, training);
+  if (expandedNote === idx) expandedNote = null;
+  showToast('Training note removed', 'warn');
+  renderNotesList();
+  renderDirectiveCard();
+  updateTrainingProgress();
+  updateTopbar();
+}
+
+function renderNotesList() {
+  const card = document.getElementById('saved-notes-card');
+  const list = document.getElementById('notes-list');
+  card.classList.toggle('hidden', training.length === 0);
+  document.getElementById('saved-notes-title').textContent = `◉ Saved Training Notes (${training.length})`;
+
+  list.innerHTML = training.map((note, i) => {
+    const date = new Date(note.ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const expanded = expandedNote === i;
+    return `
+      <div class="note-item" id="note-item-${i}">
+        <div class="note-item-header">
+          <div class="note-meta">NOTE #${i+1} &nbsp;·&nbsp; ${date} &nbsp;·&nbsp; ${note.text.length.toLocaleString()} chars</div>
+          <div class="note-actions">
+            <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="toggleNote(${i})">${expanded?'Collapse':'View'}</button>
+            <button class="btn btn-danger" style="font-size:11px;padding:4px 10px" onclick="removeTrainingNote(${i})">Remove</button>
+          </div>
+        </div>
+        ${expanded
+          ? `<div class="note-full">${esc(note.text)}</div>`
+          : `<div class="note-preview">${esc(note.text.slice(0,120).replace(/\n/g,' '))}…</div>`}
+      </div>`;
+  }).join('');
+}
+
+function toggleNote(idx) {
+  expandedNote = expandedNote === idx ? null : idx;
+  renderNotesList();
+}
+
+function renderDirectiveCard() {
+  const recentCount = getRecentCount();
+
+  // Buttons
+  document.getElementById('btn-toggle-dir').classList.toggle('hidden', !directive);
+  document.getElementById('btn-edit-dir').classList.toggle('hidden', !directive);
+  document.getElementById('btn-auto-update').classList.toggle('hidden', !(directive && recentCount >= MIN_NOTES));
+
+  if (directive && recentCount >= MIN_NOTES) {
+    document.getElementById('btn-auto-update').innerHTML =
+      `<span class="pattern-badge">${recentCount} recent</span> Auto-Update`;
+  }
+
+  // Status
+  const statusEl = document.getElementById('directive-status');
+  if (!directive) {
+    statusEl.className = `directive-status${training.length >= MIN_NOTES?' active':''}`;
+    statusEl.textContent = training.length < MIN_NOTES
+      ? `⚠ Add ${MIN_NOTES - training.length} more training note${MIN_NOTES-training.length!==1?'s':''} to enable generation.`
+      : `✓ ${training.length} notes ready — click Generate Directive.`;
+  } else {
+    statusEl.className = 'directive-status active';
+    statusEl.textContent = `✓ Prime Directive active — ${directive.length} characters`;
+  }
+
+  // View/edit panels
+  document.getElementById('directive-view-wrap').classList.toggle('hidden', !showDir || editingDir);
+  document.getElementById('directive-edit-wrap').classList.toggle('hidden', !editingDir);
+  document.getElementById('directive-box').textContent = directive;
+  document.getElementById('btn-toggle-dir').textContent = showDir ? 'Hide' : 'View';
+
+  // Auto-update hint
+  const hint = document.getElementById('auto-update-hint');
+  if (directive && recentCount >= MIN_NOTES) {
+    hint.classList.remove('hidden');
+    document.getElementById('auto-update-hint-text').textContent =
+      `${recentCount} output notes from the past 2 weeks are available for pattern analysis. Use "Auto-Update" to refine the directive.`;
+  } else {
+    hint.classList.add('hidden');
+  }
+}
+
+function toggleDirectiveView() {
+  showDir = !showDir;
+  editingDir = false;
+  renderDirectiveCard();
+}
+
+function startEditDirective() {
+  editingDir = true;
+  showDir = true;
+  document.getElementById('directive-edit-ta').value = directive;
+  renderDirectiveCard();
+}
+
+function cancelEditDirective() {
+  editingDir = false;
+  renderDirectiveCard();
+}
+
+function saveDirectiveEdit() {
+  directive = document.getElementById('directive-edit-ta').value;
+  ss(`${pid(selected)}_dir`, directive);
+  editingDir = false;
+  showToast('Prime Directive saved', 'success');
+  renderDirectiveCard();
+  updateTopbar();
+}
+
+async function generateDirective() {
+  if (!selected || training.length < MIN_NOTES) return;
+  setLoading(true, 'Analyzing notes and building Prime Directive…');
+  try {
+    const notesText = training.map((n,i) =>
+      `=== NOTE ${i+1} — ${new Date(n.ts).toLocaleDateString()} ===\n${n.text}`
+    ).join('\n\n');
+
+    const sys = `You are a precision medical note style analyst. Extract exact formatting and style patterns from physician notes to build a "Prime Directive" — a definitive, exhaustive style guide used to reformat other notes identically.`;
+    const usr = `Analyze these ${training.length} notes from ${selected}:
+
+${notesText}
+
+Build a comprehensive Prime Directive. Cover each of the following with specific, actionable instructions:
+
+1. SECTION HEADERS — capitalization, bold/underline usage, colon convention
+2. BOLD PATTERNS — exactly what type of content gets bolded (<strong>) and when
+3. UNDERLINE PATTERNS — exactly what content gets underlined (<u>) and when
+4. INDENTATION — what content is indented, by how much, and what triggers indentation
+5. LIST STRUCTURE — bullet style, numbering, sub-list nesting patterns
+6. SENTENCE PATTERNS — recurring opener phrases, preferred terminology, abbreviations
+7. CONTENT ORDERING — how information flows within each section
+8. SPECIAL HABITS — unique or repeated stylistic quirks (spacing, punctuation, etc.)
+
+Be exhaustive and specific. Format as a numbered list of precise rules.`;
+
+    directive = await callClaude(sys, usr, MODEL_OPUS);
+    ss(`${pid(selected)}_dir`, directive);
+    showDir = true;
+    showToast('Prime Directive generated', 'success');
+    renderDirectiveCard();
+    updateTopbar();
+  } catch(e) {
+    showToast(`Error: ${e.message}`, 'error');
+  }
+  setLoading(false);
+}
+
+async function autoUpdateDirective() {
+  if (!selected || !directive) return;
+  const twoWeeks = Date.now() - 14*24*60*60*1000;
+  const recent = outputs.filter(o => o.ts > twoWeeks);
+  if (recent.length < MIN_NOTES) return;
+  setLoading(true, 'Analyzing recent output patterns…');
+  try {
+    const recentText = recent.slice(0,10).map((o,i) =>
+      `=== OUTPUT ${i+1} — ${new Date(o.ts).toLocaleDateString()} ===\n${o.reformatted.replace(/<[^>]+>/g,'')}`
+    ).join('\n\n');
+
+    const sys = `You are a medical note style analyst updating a Prime Directive based on recent reformatted notes.`;
+    const usr = `Current Prime Directive for ${selected}:
+${directive}
+
+Recent reformatted outputs (${recent.length} notes from past 2 weeks):
+${recentText}
+
+Identify any consistent new patterns or deviations appearing in ${MIN_NOTES}+ recent notes. If meaningful changes exist, update the Prime Directive to reflect them. If no significant changes, return the original unchanged. Return ONLY the Prime Directive text, no preamble.`;
+
+    directive = await callClaude(sys, usr, MODEL_OPUS);
+    ss(`${pid(selected)}_dir`, directive);
+    showToast('Prime Directive updated from recent patterns', 'success');
+    renderDirectiveCard();
+  } catch(e) {
+    showToast(`Error: ${e.message}`, 'error');
+  }
+  setLoading(false);
+}
+
+// ── REFORMAT TAB ──────────────────────────────────────────────────────────────
+function renderReformatTab() {
+  const noDir = document.getElementById('no-directive-alert');
+  noDir.classList.toggle('hidden', !!directive);
+  if (!directive) {
+    document.getElementById('no-directive-msg').textContent =
+      `No Prime Directive for ${selected}. Go to the Training tab, add at least ${MIN_NOTES} sample notes, and generate a directive before reformatting.`;
+  }
+  document.getElementById('btn-reformat').disabled = !directive;
+  renderHistoryCard();
+}
+
+async function reformatNote() {
+  const raw = document.getElementById('raw-note-input').value.trim();
+  if (!raw || !selected || !directive) return;
+  setLoading(true, 'Extracting sections and reformatting…');
+  try {
+    const sys = `You are a precision medical note formatter for ${selected}. Extract INTERIM HISTORY and ASSESSMENT AND PLAN sections and reformat them exactly per the Prime Directive.
+
+PRIME DIRECTIVE FOR ${selected.toUpperCase()}:
+${directive}`;
+
+    const usr = `From the note below, extract ONLY the INTERIM HISTORY and ASSESSMENT AND PLAN sections. Reformat them precisely per the Prime Directive.
+
+HARD RULES:
+- Include ONLY INTERIM HISTORY and ASSESSMENT AND PLAN — nothing else
+- Apply all formatting rules from the Prime Directive exactly
+- Use <strong> for bold, <u> for underline, <br> for line breaks
+- Use <div style="margin-left:24px"> for one indent level, <div style="margin-left:48px"> for two levels
+- Preserve all medical content exactly — only formatting changes
+- Begin your response directly with the reformatted content, no preamble
+
+RAW NOTE:
+${raw}`;
+
+    const html = await callClaude(sys, usr, MODEL_SONNET);
+
+    // Save output
+    outputs.unshift({ raw, reformatted: html, ts: Date.now() });
+    if (outputs.length > 50) outputs.pop();
+    ss(`${pid(selected)}_out`, outputs);
+
+    // Show output
+    document.getElementById('output-render').innerHTML = html;
+    document.getElementById('output-footer').textContent =
+      `✓ Formatted per ${selected}'s Prime Directive · Paste into Epic or IKnowMed using Copy Rich Text`;
+    document.getElementById('output-card').classList.remove('hidden');
+
+    renderHistoryCard();
+    updateTopbar();
+    showToast('Note reformatted successfully', 'success');
+  } catch(e) {
+    showToast(`Error: ${e.message}`, 'error');
+  }
+  setLoading(false);
+}
+
+function clearReformat() {
+  document.getElementById('raw-note-input').value = '';
+  document.getElementById('output-render').innerHTML = '';
+  document.getElementById('output-card').classList.add('hidden');
+}
+
+function renderHistoryCard() {
+  const card = document.getElementById('history-card');
+  card.classList.toggle('hidden', outputs.length === 0);
+  if (outputs.length === 0) return;
+
+  const recentCount = getRecentCount();
+  const pct = Math.min((recentCount / MIN_NOTES) * 100, 100);
+
+  document.getElementById('history-pills').innerHTML =
+    `<span class="stat-pill">${outputs.length} total notes</span>
+     <span class="stat-pill${recentCount >= MIN_NOTES?' amber':''}">${recentCount} in last 14 days</span>`;
+
+  const msgEl = document.getElementById('history-msg');
+  if (recentCount >= MIN_NOTES) {
+    msgEl.style.color = '#a33a10';
+    msgEl.innerHTML = `<div class="inline-alert warn" style="margin:0">⊕ Pattern threshold reached. Go to the Training tab and use Auto-Update to refine the Prime Directive.</div>`;
+  } else {
+    msgEl.style.color = '#a08070';
+    msgEl.textContent = `${recentCount}/${MIN_NOTES} recent outputs collected. Pattern auto-update activates at ${MIN_NOTES}+ notes within 14 days.`;
+  }
+
+  const prog = document.getElementById('history-progress');
+  prog.style.width = `${pct}%`;
+  prog.style.background = recentCount >= MIN_NOTES ? 'linear-gradient(90deg,#C94E1E,#e87840)' : '';
+}
+
+function getRecentCount() {
+  const twoWeeks = Date.now() - 14*24*60*60*1000;
+  return outputs.filter(o => o.ts > twoWeeks).length;
+}
+
+// ── COPY ──────────────────────────────────────────────────────────────────────
+function copyRich() {
+  const html = document.getElementById('output-render').innerHTML;
+  try {
+    const blob = new Blob([html], { type:'text/html' });
+    const plain = html.replace(/<[^>]+>/g,'');
+    navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': blob,
+        'text/plain': new Blob([plain], {type:'text/plain'})
+      })
+    ]).then(() => showToast('Copied as rich text ✓', 'success'))
+      .catch(() => { navigator.clipboard.writeText(plain); showToast('Copied as plain text ✓', 'info'); });
+  } catch {
+    const plain = html.replace(/<[^>]+>/g,'');
+    navigator.clipboard.writeText(plain);
+    showToast('Copied as plain text ✓', 'info');
+  }
+}
+
+function copyPlain() {
+  const html = document.getElementById('output-render').innerHTML;
+  navigator.clipboard.writeText(html.replace(/<[^>]+>/g,''));
+  showToast('Copied as plain text ✓', 'info');
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function esc(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── START ─────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
