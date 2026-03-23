@@ -122,6 +122,18 @@
   #toast.info    { background: #C94E1E; }
   @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+  /* ── PASSWORD SCREEN ── */
+  #lock-screen { position: fixed; inset: 0; background: #C94E1E; display: flex; align-items: center; justify-content: center; z-index: 99999; flex-direction: column; gap: 0; }
+  #lock-screen.hidden { display: none; }
+  .lock-card { background: #fff; border-radius: 14px; padding: 36px 40px; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.2); width: 90%; max-width: 360px; }
+  .lock-logo { width: 180px; height: auto; margin-bottom: 20px; }
+  .lock-title { font-size: 14px; color: #7a6050; margin-bottom: 20px; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
+  .lock-input { width: 100%; background: #fdf8f5; border: 1px solid #e0c8b8; border-radius: 6px; color: #2c1f17; padding: 11px 13px; font-size: 15px; font-family: 'Source Sans 3', sans-serif; outline: none; text-align: center; letter-spacing: 0.1em; transition: border-color 0.15s; margin-bottom: 14px; }
+  .lock-input:focus { border-color: #C94E1E; box-shadow: 0 0 0 3px rgba(201,78,30,0.1); }
+  .lock-btn { width: 100%; padding: 11px; background: #C94E1E; border: none; border-radius: 6px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Source Sans 3', sans-serif; transition: background 0.15s; }
+  .lock-btn:hover { background: #a33a10; }
+  .lock-error { font-size: 12px; color: #c03030; margin-top: 10px; min-height: 18px; }
+
   /* ── LOADING OVERLAY ── */
   #loading-overlay { position: fixed; inset: 0; background: rgba(250,247,244,0.85); display: none; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(3px); }
   #loading-overlay.show { display: flex; }
@@ -145,6 +157,17 @@
 </style>
 </head>
 <body>
+
+<!-- PASSWORD LOCK SCREEN -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <img class="lock-logo" src="https://www.compassoncology.com/hs-fs/hubfs/logo.png?width=426&height=140&name=logo.png" alt="Compass Oncology" />
+    <div class="lock-title">AI NOTE INTELLIGENCE</div>
+    <input class="lock-input" id="lock-input" type="password" placeholder="Enter password" />
+    <button class="lock-btn" id="lock-btn">Unlock</button>
+    <div class="lock-error" id="lock-error"></div>
+  </div>
+</div>
 
 <div id="app">
 
@@ -308,6 +331,34 @@
 </div>
 
 <script>
+// ── PASSWORD ──────────────────────────────────────────────────────────────────
+const CORRECT_PASSWORD = 'Compass';
+
+function checkPassword() {
+  const val = document.getElementById('lock-input').value;
+  if (val === CORRECT_PASSWORD) {
+    document.getElementById('lock-screen').classList.add('hidden');
+    sessionStorage.setItem('compass_unlocked', '1');
+    init();
+  } else {
+    document.getElementById('lock-error').textContent = 'Incorrect password. Please try again.';
+    document.getElementById('lock-input').value = '';
+    document.getElementById('lock-input').focus();
+  }
+}
+
+document.getElementById('lock-btn').onclick = checkPassword;
+document.getElementById('lock-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPassword();
+  document.getElementById('lock-error').textContent = '';
+});
+
+// Auto-unlock if already authenticated this session
+if (sessionStorage.getItem('compass_unlocked') === '1') {
+  document.getElementById('lock-screen').classList.add('hidden');
+  window.addEventListener('DOMContentLoaded', init);
+}
+
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const API_URL      = 'https://ahl8zh0plk.execute-api.us-east-1.amazonaws.com/default/compass-bedrock-proxy';
 const MODEL_SONNET = 'us.anthropic.claude-sonnet-4-6';
@@ -844,7 +895,7 @@ function esc(str) {
 }
 
 // ── START ─────────────────────────────────────────────────────────────────────
-init();
+// App initializes after password is entered (see password section above)
 </script>
 </body>
 </html>
