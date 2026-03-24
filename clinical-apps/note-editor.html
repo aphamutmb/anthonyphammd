@@ -362,7 +362,7 @@ if (sessionStorage.getItem('compass_unlocked') === '1') {
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const API_URL      = 'https://ahl8zh0plk.execute-api.us-east-1.amazonaws.com/default/compass-bedrock-proxy';
 const MODEL_SONNET = 'us.anthropic.claude-sonnet-4-6';
-const MODEL_OPUS   = 'us.anthropic.claude-opus-4-6';
+const MODEL_OPUS   = 'us.anthropic.claude-sonnet-4-6';
 const MIN_NOTES    = 5;
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -598,7 +598,7 @@ Do NOT replace: medical terms, drug names, dosages, lab values, cancer types, tr
 Return ONLY the de-identified note text with no preamble, explanation, or commentary.`;
 
     const usr = `De-identify this medical note:\n\n${txt}`;
-    const deidentified = await callClaude(sys, usr, MODEL_SONNET, 2000);
+    const deidentified = await callClaude(sys, usr, MODEL_SONNET, 8000);
 
     training.push({ text: deidentified, ts: Date.now() });
     ss(`${pid(selected)}_train`, training);
@@ -728,9 +728,9 @@ async function generateDirective() {
   if (!selected || training.length < MIN_NOTES) return;
   setLoading(true, 'Analyzing notes and building Prime Directive…');
   try {
-    // Truncate each note to 3000 chars to balance quality and token limits
+    // Use full note text for richer pattern analysis
     const notesText = training.map((n,i) =>
-      `=== NOTE ${i+1} — ${new Date(n.ts).toLocaleDateString()} ===\n${n.text.slice(0, 3000)}${n.text.length > 3000 ? '\n[truncated for length]' : ''}`
+      `=== NOTE ${i+1} — ${new Date(n.ts).toLocaleDateString()} ===\n${n.text}`
     ).join('\n\n');
 
     const sys = `You are a precision medical note style analyst. Extract exact formatting and style patterns from physician notes to build a "Prime Directive" — a definitive, exhaustive style guide used to reformat other notes identically.`;
@@ -751,7 +751,7 @@ Build a comprehensive Prime Directive. Cover each of the following with specific
 
 Be exhaustive and specific. Format as a numbered list of precise rules.`;
 
-    directive = await callClaude(sys, usr, MODEL_OPUS, 4000);
+    directive = await callClaude(sys, usr, MODEL_SONNET, 8000);
     ss(`${pid(selected)}_dir`, directive);
     showDir = true;
     showToast('Prime Directive generated', 'success');
@@ -783,7 +783,7 @@ ${recentText}
 
 Identify any consistent new patterns or deviations appearing in ${MIN_NOTES}+ recent notes. If meaningful changes exist, update the Prime Directive to reflect them. If no significant changes, return the original unchanged. Return ONLY the Prime Directive text, no preamble.`;
 
-    directive = await callClaude(sys, usr, MODEL_SONNET, 4000);
+    directive = await callClaude(sys, usr, MODEL_SONNET, 8000);
     ss(`${pid(selected)}_dir`, directive);
     showToast('Prime Directive updated from recent patterns', 'success');
     renderDirectiveCard();
