@@ -726,32 +726,61 @@ function saveDirectiveEdit() {
 
 async function generateDirective() {
   if (!selected || training.length < MIN_NOTES) return;
-  setLoading(true, 'Analyzing notes and building Prime Directive…');
+  setLoading(true, 'Analyzing notes 1–3…');
   try {
-    // Use full note text for richer pattern analysis
-    const notesText = training.map((n,i) =>
+    const sys = `You are a precision medical note style analyst. Extract exact formatting and style patterns from physician notes to build a "Prime Directive" — a definitive, exhaustive style guide used to reformat other notes identically.`;
+
+    // ── Pass 1: analyze first 3 notes ──
+    const batch1 = training.slice(0, 3).map((n,i) =>
       `=== NOTE ${i+1} — ${new Date(n.ts).toLocaleDateString()} ===\n${n.text}`
     ).join('\n\n');
 
-    const sys = `You are a precision medical note style analyst. Extract exact formatting and style patterns from physician notes to build a "Prime Directive" — a definitive, exhaustive style guide used to reformat other notes identically.`;
-    const usr = `Analyze these ${training.length} notes from ${selected}:
+    const usr1 = `Analyze these notes from ${selected} and extract all formatting and style patterns you observe:
 
-${notesText}
+${batch1}
 
-Build a comprehensive Prime Directive. Cover each of the following with specific, actionable instructions:
+List every pattern you find across these categories:
+1. SECTION HEADERS — capitalization, bold/underline usage, colon convention
+2. BOLD PATTERNS — exactly what content gets bolded and when
+3. UNDERLINE PATTERNS — exactly what content gets underlined and when
+4. INDENTATION — what triggers indentation and how much
+5. LIST STRUCTURE — bullet style, numbering, nesting patterns
+6. SENTENCE PATTERNS — recurring phrases, terminology, abbreviations
+7. CONTENT ORDERING — how information flows within sections
+8. SPECIAL HABITS — unique stylistic quirks
+
+Be specific and exhaustive. This is a preliminary analysis.`;
+
+    const analysis1 = await callClaude(sys, usr1, MODEL_SONNET, 4000);
+
+    // ── Pass 2: analyze remaining notes and synthesize ──
+    setLoading(true, 'Analyzing notes 4–5 and synthesizing…');
+    const batch2 = training.slice(3).map((n,i) =>
+      `=== NOTE ${i+4} — ${new Date(n.ts).toLocaleDateString()} ===\n${n.text}`
+    ).join('\n\n');
+
+    const usr2 = `You previously analyzed notes 1–3 from ${selected} and found these patterns:
+
+${analysis1}
+
+Now analyze these additional notes and synthesize everything into one final, comprehensive Prime Directive:
+
+${batch2}
+
+Produce a single definitive Prime Directive covering all 8 categories below, reconciling any differences between notes and identifying the most consistent patterns across all ${training.length} notes:
 
 1. SECTION HEADERS — capitalization, bold/underline usage, colon convention
-2. BOLD PATTERNS — exactly what type of content gets bolded (<strong>) and when
+2. BOLD PATTERNS — exactly what content gets bolded (<strong>) and when
 3. UNDERLINE PATTERNS — exactly what content gets underlined (<u>) and when
 4. INDENTATION — what content is indented, by how much, and what triggers indentation
 5. LIST STRUCTURE — bullet style, numbering, sub-list nesting patterns
 6. SENTENCE PATTERNS — recurring opener phrases, preferred terminology, abbreviations
 7. CONTENT ORDERING — how information flows within each section
-8. SPECIAL HABITS — unique or repeated stylistic quirks (spacing, punctuation, etc.)
+8. SPECIAL HABITS — unique or repeated stylistic quirks
 
-Be exhaustive and specific. Format as a numbered list of precise rules.`;
+Format as a numbered list of precise, actionable rules. Be exhaustive and specific.`;
 
-    directive = await callClaude(sys, usr, MODEL_SONNET, 8000);
+    directive = await callClaude(sys, usr2, MODEL_SONNET, 6000);
     ss(`${pid(selected)}_dir`, directive);
     showDir = true;
     showToast('Prime Directive generated', 'success');
