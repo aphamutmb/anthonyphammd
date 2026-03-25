@@ -727,66 +727,78 @@ function saveDirectiveEdit() {
 async function generateDirective() {
   if (!selected || training.length < MIN_NOTES) return;
   try {
-    const sys = `You are a precision medical note style analyst. Extract exact formatting and style patterns from physician notes to build a "Prime Directive" — a definitive, exhaustive style guide used to reformat other notes identically.`;
+    const sys = `You are an expert medical note style analyst working with an oncology practice. Your job is to deeply understand how a specific physician writes their clinical notes and describe their style in clear, natural prose — the way an experienced colleague would explain it to someone new. Your descriptions should read like thoughtful guidance, not a rulebook.`;
 
-    const patternPrompt = (notes, label) => `Analyze these notes from ${selected} and extract all formatting and style patterns:
+    const patternPrompt = (notes, label) => `Carefully read these clinical notes written by ${selected} and observe how they write:
 
 ${notes}
 
-List every pattern you observe across these categories:
-1. SECTION HEADERS — capitalization, bold/underline usage, colon convention
-2. BOLD PATTERNS — exactly what content gets bolded and when
-3. UNDERLINE PATTERNS — exactly what content gets underlined and when
-4. INDENTATION — what triggers indentation and how much
-5. LIST STRUCTURE — bullet style, numbering, nesting patterns
-6. SENTENCE PATTERNS — recurring phrases, terminology, abbreviations
-7. CONTENT ORDERING — how information flows within sections
-8. SPECIAL HABITS — unique stylistic quirks
+Describe every consistent pattern you notice in their writing style. Focus on:
+- How they format and label each section of the note
+- What they bold, underline, or emphasize and in what situations
+- How they use indentation and spacing to organize information
+- How they structure lists, sub-lists, and numbered items
+- The phrases and sentence structures they consistently use to open sections or present information
+- How information flows and what order things appear in
+- Any distinctive habits in how they write drug names, doses, labs, or clinical findings
+- Any other recurring stylistic choices that define their voice
 
-Be specific and exhaustive. Label this as ${label}.`;
+Write your observations in clear, natural prose — describe what you see as if explaining this physician's style to a colleague. Label this ${label}.`;
 
     // ── Pass 1: notes 1–2 ──
     setLoading(true, 'Analyzing notes 1–2…');
     const batch1 = training.slice(0, 2).map((n,i) =>
       `=== NOTE ${i+1} — ${new Date(n.ts).toLocaleDateString()} ===\n${n.text}`
     ).join('\n\n');
-    const analysis1 = await callClaude(sys, patternPrompt(batch1, 'Pattern Analysis A'), MODEL_SONNET, 3000);
+    const analysis1 = await callClaude(sys, patternPrompt(batch1, 'Style Observations A'), MODEL_SONNET, 3000);
 
     // ── Pass 2: notes 3–4 ──
     setLoading(true, 'Analyzing notes 3–4…');
     const batch2 = training.slice(2, 4).map((n,i) =>
       `=== NOTE ${i+3} — ${new Date(n.ts).toLocaleDateString()} ===\n${n.text}`
     ).join('\n\n');
-    const analysis2 = await callClaude(sys, patternPrompt(batch2, 'Pattern Analysis B'), MODEL_SONNET, 3000);
+    const analysis2 = await callClaude(sys, patternPrompt(batch2, 'Style Observations B'), MODEL_SONNET, 3000);
 
-    // ── Pass 3: note 5 + synthesize ──
-    setLoading(true, 'Analyzing note 5 and synthesizing Prime Directive…');
+    // ── Pass 3: note 5 + synthesize into prose Prime Directive ──
+    setLoading(true, 'Analyzing note 5 and building Prime Directive…');
     const batch3 = `=== NOTE 5 — ${new Date(training[4].ts).toLocaleDateString()} ===\n${training[4].text}`;
 
-    const synthPrompt = `You have analyzed notes 1–4 from ${selected} and found these patterns:
+    const synthPrompt = `You have studied notes 1–4 from ${selected} and made these style observations:
 
-PATTERN ANALYSIS A (notes 1–2):
+STYLE OBSERVATIONS A (notes 1–2):
 ${analysis1}
 
-PATTERN ANALYSIS B (notes 3–4):
+STYLE OBSERVATIONS B (notes 3–4):
 ${analysis2}
 
-Now analyze this final note and synthesize everything into one definitive Prime Directive:
+Now read this final note and synthesize everything into a single, definitive Prime Directive for ${selected}:
 
 ${batch3}
 
-Produce a single comprehensive Prime Directive covering all 8 categories below. Reconcile any differences and identify the most consistent patterns across all 5 notes:
+Write the Prime Directive as flowing, natural prose organized into these sections. Each section should read like clear guidance from an experienced colleague — not a list of rules, not bullet points, but coherent paragraphs that a person could read and immediately understand how to write like ${selected}:
 
-1. SECTION HEADERS — capitalization, bold/underline usage, colon convention
-2. BOLD PATTERNS — exactly what content gets bolded (<strong>) and when
-3. UNDERLINE PATTERNS — exactly what content gets underlined (<u>) and when
-4. INDENTATION — what content is indented, by how much, and what triggers indentation
-5. LIST STRUCTURE — bullet style, numbering, sub-list nesting patterns
-6. SENTENCE PATTERNS — recurring opener phrases, preferred terminology, abbreviations
-7. CONTENT ORDERING — how information flows within each section
-8. SPECIAL HABITS — unique or repeated stylistic quirks
+SECTION HEADERS
+Describe exactly how each section of the note is labeled — capitalization, whether headers are bolded or underlined, whether colons are used, and any section-specific formatting conventions.
 
-Format as a numbered list of precise, actionable rules. Be exhaustive and specific.`;
+EMPHASIS AND FORMATTING
+Describe what gets bolded, what gets underlined, and the specific situations that trigger each. Be concrete — what types of clinical content receive which treatment.
+
+INDENTATION AND SPACING
+Describe how indentation is used to organize information, what triggers a new indent level, and how spacing between elements is handled.
+
+LIST AND ITEM STRUCTURE
+Describe how lists are formatted, how sub-items are nested, whether numbering or bullets are used and when, and any patterns in how individual items are written.
+
+SENTENCE STYLE AND PHRASING
+Describe the characteristic phrases, sentence openers, and clinical terminology this physician consistently uses. Include how they present labs, medications, doses, and findings.
+
+CONTENT ORDERING
+Describe the typical flow of information within each section — what comes first, what follows, and how the narrative progresses.
+
+DISTINCTIVE HABITS
+Describe any other recurring stylistic choices that define this physician's clinical voice — anything a reader would immediately recognize as characteristic of their notes.
+
+Write in clear, natural prose. Be thorough and specific so that someone could read this and immediately know how to format a note exactly the way ${selected} would write it.`;
 
     directive = await callClaude(sys, synthPrompt, MODEL_SONNET, 6000);
     ss(`${pid(selected)}_dir`, directive);
@@ -847,25 +859,28 @@ async function reformatNote() {
   if (!raw || !selected || !directive) return;
   setLoading(true, 'Extracting sections and reformatting…');
   try {
-    const sys = `You are a precision medical note formatter for ${selected}. Extract INTERIM HISTORY and ASSESSMENT AND PLAN sections and reformat them exactly per the Prime Directive.
+    const sys = `You are a precision medical note formatter for ${selected}. Your job is to reformat clinical notes so they look nearly identical to this physician's established style — approximately 85-90% similar to their training notes, with only natural variation in content-driven formatting.
 
 PRIME DIRECTIVE FOR ${selected.toUpperCase()}:
 ${directive}`;
 
     const usr = `From the note below, extract ONLY the INTERIM HISTORY and ASSESSMENT AND PLAN sections. Reformat them precisely per the Prime Directive.
 
-HARD RULES:
-- Include ONLY INTERIM HISTORY and ASSESSMENT AND PLAN — nothing else
-- Apply all formatting rules from the Prime Directive exactly
+HARD RULES — these must NEVER be violated:
+- Include ONLY INTERIM HISTORY and ASSESSMENT AND PLAN — delete all other sections entirely
+- The reformatted output must look 85-90% similar to the training notes in structure, formatting, and style — a reader should immediately recognize it as written by ${selected}
+- Apply ALL formatting from the Prime Directive exactly — section headers, bold, underline, indentation, spacing, phrasing
 - Use <strong> for bold, <u> for underline, <br> for line breaks
 - Use <div style="margin-left:24px"> for one indent level, <div style="margin-left:48px"> for two levels
-- Preserve all medical content exactly — only formatting changes
-- Begin your response directly with the reformatted content, no preamble
+- Preserve ALL medical content exactly — do not add, remove, or alter any clinical information
+- ASSESSMENT AND PLAN: every problem listed must be preserved — do not delete, merge, or omit any problem, no matter how minor
+- ASSESSMENT AND PLAN: maintain the problem-by-problem structure — each problem gets its own entry with its associated plan
+- Begin your response directly with the reformatted content, no preamble or explanation
 
 RAW NOTE:
 ${raw}`;
 
-    const html = await callClaude(sys, usr, MODEL_SONNET);
+    const html = await callClaude(sys, usr, MODEL_SONNET, 4000);
 
     // Save output
     outputs.unshift({ raw, reformatted: html, ts: Date.now() });
