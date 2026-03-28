@@ -2,6 +2,11 @@
   directory = "netlify/functions"
 
 [[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
   for = "/sillage/apple-touch-icon.png"
   [headers.values]
     Content-Type = "image/png"
