@@ -1,7 +1,5 @@
 // netlify/functions/claude-proxy.js
-// Proxies requests to the Anthropic API, keeping the API key server-side.
 exports.handler = async (event) => {
-  // Only allow POST
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
   }
@@ -13,6 +11,8 @@ exports.handler = async (event) => {
 
   try {
     const body = JSON.parse(event.body);
+    console.log("Calling Anthropic with model:", body.model);
+
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -25,6 +25,11 @@ exports.handler = async (event) => {
     });
 
     const data = await response.json();
+    console.log("Anthropic response status:", response.status);
+    if (!response.ok) {
+      console.error("Anthropic error:", JSON.stringify(data));
+    }
+
     return {
       statusCode: response.status,
       headers: {
