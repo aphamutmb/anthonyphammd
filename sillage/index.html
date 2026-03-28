@@ -4,8 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sillage Side Quest</title>
-
-  <!-- PWA / Bookmark icon -->
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Sillage"/>
@@ -17,92 +15,39 @@
 <div id="root"></div>
 <canvas id="iconCanvas" width="180" height="180" style="display:none"></canvas>
 <script>
-// Generate icon as real PNG via canvas — works on iOS
 (function(){
-  const c = document.getElementById('iconCanvas');
-  const ctx = c.getContext('2d');
-  const w = 180, h = 180;
-
-  // Background
-  const bg = ctx.createRadialGradient(90,90,10,90,90,130);
-  bg.addColorStop(0,'#0a1828'); bg.addColorStop(1,'#04080f');
-  ctx.fillStyle = bg;
-  roundRect(ctx,0,0,w,h,36); ctx.fill();
-
-  // Halo rings
-  ctx.strokeStyle='rgba(30,86,160,0.35)'; ctx.lineWidth=1.5;
-  circle(ctx,90,85,66);
-  ctx.strokeStyle='rgba(58,155,213,0.25)'; ctx.lineWidth=1;
-  circle(ctx,90,85,56);
-
-  // Wisp dots left
-  wisp(ctx,42,62,7,0.55); wisp(ctx,28,48,5,0.4); wisp(ctx,16,36,3,0.28);
-  // Wisp dots right
-  wisp(ctx,138,62,7,0.55); wisp(ctx,152,48,5,0.4); wisp(ctx,164,36,3,0.28);
-
-  // Flask body
-  ctx.beginPath();
-  ctx.ellipse(90,106,30,34,0,0,Math.PI*2);
-  ctx.fillStyle='#0a1830'; ctx.fill();
-  ctx.strokeStyle='#3a9bd5'; ctx.lineWidth=2.5; ctx.stroke();
-
-  // Flask neck
-  ctx.fillStyle='#0a1830'; ctx.strokeStyle='#3a9bd5'; ctx.lineWidth=2.5;
-  roundRect(ctx,76,63,28,24,4); ctx.fill(); ctx.stroke();
-
-  // Stopper
-  ctx.fillStyle='#1e56a0'; ctx.strokeStyle='#7ecfee'; ctx.lineWidth=1.5;
-  roundRect(ctx,71,53,38,12,4); ctx.fill(); ctx.stroke();
-  ctx.fillStyle='rgba(45,111,192,0.55)';
-  roundRect(ctx,78,56,24,6,2); ctx.fill();
-
-  // Liquid
-  const liq = ctx.createRadialGradient(90,95,4,90,108,28);
-  liq.addColorStop(0,'rgba(58,155,213,0.55)'); liq.addColorStop(1,'rgba(13,48,106,0.95)');
-  ctx.beginPath(); ctx.ellipse(90,112,23,25,0,0,Math.PI*2);
-  ctx.fillStyle=liq; ctx.fill();
-
-  // Shine
-  ctx.beginPath(); ctx.ellipse(90,89,14,5,0,0,Math.PI*2);
-  ctx.fillStyle='rgba(126,207,238,0.18)'; ctx.fill();
-
-  // Bubbles
-  wisp(ctx,80,109,3.5,0.45); wisp(ctx,100,115,2.5,0.35); wisp(ctx,88,122,2,0.5);
-
-  // Wordmark
-  ctx.fillStyle='rgba(126,207,238,0.92)';
-  ctx.font='bold 13px Georgia,serif';
-  ctx.letterSpacing='3px';
-  ctx.textAlign='center';
-  ctx.fillText('SILLAGE',90,158);
-
-  // Star sparkles
-  ctx.fillStyle='rgba(126,207,238,0.75)'; ctx.font='14px serif';
-  ctx.fillText('✦',26,32);
-  ctx.fillStyle='rgba(58,155,213,0.6)'; ctx.font='11px serif';
-  ctx.fillText('✦',148,28);
-  ctx.fillStyle='rgba(58,155,213,0.5)'; ctx.font='10px serif';
-  ctx.fillText('✦',52,150);
-
-  const png = c.toDataURL('image/png');
-  document.getElementById('appicon').href = png;
-  document.getElementById('favicon').href = png;
-
-  function roundRect(ctx,x,y,w,h,r){
-    ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
-  }
+  const c=document.getElementById('iconCanvas'),ctx=c.getContext('2d'),w=180,h=180;
+  const bg=ctx.createRadialGradient(90,90,10,90,90,130);
+  bg.addColorStop(0,'#0a1828');bg.addColorStop(1,'#04080f');
+  ctx.fillStyle=bg;roundRect(ctx,0,0,w,h,36);ctx.fill();
+  ctx.strokeStyle='rgba(30,86,160,0.35)';ctx.lineWidth=1.5;circle(ctx,90,85,66);
+  ctx.strokeStyle='rgba(58,155,213,0.25)';ctx.lineWidth=1;circle(ctx,90,85,56);
+  wisp(ctx,42,62,7,0.55);wisp(ctx,28,48,5,0.4);wisp(ctx,16,36,3,0.28);
+  wisp(ctx,138,62,7,0.55);wisp(ctx,152,48,5,0.4);wisp(ctx,164,36,3,0.28);
+  ctx.beginPath();ctx.ellipse(90,106,30,34,0,0,Math.PI*2);
+  ctx.fillStyle='#0a1830';ctx.fill();ctx.strokeStyle='#3a9bd5';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.fillStyle='#0a1830';ctx.strokeStyle='#3a9bd5';ctx.lineWidth=2.5;
+  roundRect(ctx,76,63,28,24,4);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#1e56a0';ctx.strokeStyle='#7ecfee';ctx.lineWidth=1.5;
+  roundRect(ctx,71,53,38,12,4);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(45,111,192,0.55)';roundRect(ctx,78,56,24,6,2);ctx.fill();
+  const liq=ctx.createRadialGradient(90,95,4,90,108,28);
+  liq.addColorStop(0,'rgba(58,155,213,0.55)');liq.addColorStop(1,'rgba(13,48,106,0.95)');
+  ctx.beginPath();ctx.ellipse(90,112,23,25,0,0,Math.PI*2);ctx.fillStyle=liq;ctx.fill();
+  ctx.beginPath();ctx.ellipse(90,89,14,5,0,0,Math.PI*2);ctx.fillStyle='rgba(126,207,238,0.18)';ctx.fill();
+  wisp(ctx,80,109,3.5,0.45);wisp(ctx,100,115,2.5,0.35);wisp(ctx,88,122,2,0.5);
+  ctx.fillStyle='rgba(126,207,238,0.92)';ctx.font='bold 13px Georgia,serif';
+  ctx.letterSpacing='3px';ctx.textAlign='center';ctx.fillText('SILLAGE',90,158);
+  ctx.fillStyle='rgba(126,207,238,0.75)';ctx.font='14px serif';ctx.fillText('✦',26,32);
+  ctx.fillStyle='rgba(58,155,213,0.6)';ctx.font='11px serif';ctx.fillText('✦',148,28);
+  ctx.fillStyle='rgba(58,155,213,0.5)';ctx.font='10px serif';ctx.fillText('✦',52,150);
+  const png=c.toDataURL('image/png');
+  document.getElementById('appicon').href=png;document.getElementById('favicon').href=png;
+  function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
   function circle(ctx,x,y,r){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();}
-  function wisp(ctx,x,y,r,op){
-    const g=ctx.createRadialGradient(x,y,0,x,y,r*2);
-    g.addColorStop(0,`rgba(58,155,213,${op})`);g.addColorStop(1,'rgba(58,155,213,0)');
-    ctx.beginPath();ctx.arc(x,y,r*2,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-  }
+  function wisp(ctx,x,y,r,op){const g=ctx.createRadialGradient(x,y,0,x,y,r*2);g.addColorStop(0,`rgba(58,155,213,${op})`);g.addColorStop(1,'rgba(58,155,213,0)');ctx.beginPath();ctx.arc(x,y,r*2,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();}
 })();
 </script>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-title" content="Sillage"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="theme-color" content="#04080f"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <style>
@@ -112,84 +57,61 @@
     @keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-8px)}}
     @keyframes revealPulse{0%{box-shadow:0 0 0 0 rgba(58,155,213,0.7)}50%{box-shadow:0 0 18px 4px rgba(58,155,213,0.4)}100%{box-shadow:0 0 0 0 rgba(58,155,213,0.7)}}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-    input::placeholder{color:rgba(126,207,238,0.35)}
-    input:focus{outline:none;border-color:rgba(58,155,213,0.8)!important;box-shadow:0 0 30px rgba(58,155,213,0.25)!important}
+    @keyframes chipPop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+    @keyframes savedPulse{0%{opacity:1;transform:scale(1)}50%{opacity:0.7;transform:scale(0.97)}100%{opacity:1;transform:scale(1)}}
+    input::placeholder,textarea::placeholder{color:rgba(126,207,238,0.35)}
+    input:focus,textarea:focus{outline:none;border-color:rgba(58,155,213,0.8)!important;box-shadow:0 0 30px rgba(58,155,213,0.25)!important}
     ::-webkit-scrollbar{width:6px}
     ::-webkit-scrollbar-track{background:#04080f}
     ::-webkit-scrollbar-thumb{background:rgba(58,155,213,0.4);border-radius:3px}
+    textarea{resize:vertical}
   </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="module">
-const {useState,useEffect,useRef,createElement:h,Fragment}=React;
+const {useState,useEffect,useRef,useCallback,createElement:h,Fragment}=React;
 
+/* ─── LINK / FAIRY SPRITES (unchanged) ─── */
 const LINK_FRAMES=[
 `<svg width="20" height="30" viewBox="0 0 20 30" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="5" y="0" width="10" height="2" fill="#2d7a1f"/><rect x="4" y="2" width="12" height="2" fill="#2d7a1f"/><rect x="3" y="4" width="14" height="3" fill="#3a9e28"/><rect x="13" y="1" width="4" height="2" fill="#2d7a1f"/><rect x="4" y="7" width="12" height="8" fill="#f5c27a"/><rect x="6" y="9" width="2" height="2" fill="#1a0a00"/><rect x="12" y="9" width="2" height="2" fill="#1a0a00"/><rect x="2" y="9" width="2" height="3" fill="#f5c27a"/><rect x="16" y="9" width="2" height="3" fill="#f5c27a"/><rect x="1" y="8" width="2" height="2" fill="#f5c27a"/><rect x="17" y="8" width="2" height="2" fill="#f5c27a"/><rect x="3" y="15" width="14" height="9" fill="#3a9e28"/><rect x="3" y="22" width="14" height="2" fill="#8B5e1a"/><rect x="0" y="15" width="3" height="6" fill="#cc2200"/><rect x="1" y="16" width="1" height="4" fill="#f5c27a"/><rect x="17" y="13" width="3" height="7" fill="#3a9e28"/><rect x="17" y="20" width="3" height="2" fill="#f5c27a"/><rect x="19" y="5" width="2" height="10" fill="#c0c0c0"/><rect x="17" y="12" width="4" height="2" fill="#c8960c"/><rect x="4" y="24" width="5" height="4" fill="#8B5e1a"/><rect x="11" y="24" width="5" height="4" fill="#8B5e1a"/><rect x="3" y="28" width="6" height="2" fill="#3a2000"/><rect x="11" y="27" width="6" height="3" fill="#3a2000"/></svg>`,
 `<svg width="20" height="30" viewBox="0 0 20 30" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="5" y="0" width="10" height="2" fill="#2d7a1f"/><rect x="4" y="2" width="12" height="2" fill="#2d7a1f"/><rect x="3" y="4" width="14" height="3" fill="#3a9e28"/><rect x="13" y="1" width="4" height="2" fill="#2d7a1f"/><rect x="4" y="7" width="12" height="8" fill="#f5c27a"/><rect x="6" y="9" width="2" height="2" fill="#1a0a00"/><rect x="12" y="9" width="2" height="2" fill="#1a0a00"/><rect x="2" y="9" width="2" height="3" fill="#f5c27a"/><rect x="16" y="9" width="2" height="3" fill="#f5c27a"/><rect x="1" y="8" width="2" height="2" fill="#f5c27a"/><rect x="17" y="8" width="2" height="2" fill="#f5c27a"/><rect x="3" y="15" width="14" height="9" fill="#3a9e28"/><rect x="3" y="22" width="14" height="2" fill="#8B5e1a"/><rect x="0" y="16" width="3" height="6" fill="#cc2200"/><rect x="1" y="17" width="1" height="4" fill="#f5c27a"/><rect x="17" y="14" width="3" height="7" fill="#3a9e28"/><rect x="17" y="21" width="3" height="2" fill="#f5c27a"/><rect x="19" y="6" width="2" height="10" fill="#c0c0c0"/><rect x="17" y="13" width="4" height="2" fill="#c8960c"/><rect x="4" y="24" width="5" height="4" fill="#8B5e1a"/><rect x="11" y="24" width="5" height="4" fill="#8B5e1a"/><rect x="3" y="27" width="6" height="3" fill="#3a2000"/><rect x="11" y="28" width="6" height="2" fill="#3a2000"/></svg>`
 ];
-
 const FAIRY_FRAMES=[
 `<svg width="14" height="16" viewBox="0 0 14 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="4" width="4" height="6" fill="#a8f0ff" opacity="0.85"/><rect x="10" y="4" width="4" height="6" fill="#a8f0ff" opacity="0.85"/><rect x="1" y="2" width="3" height="4" fill="#d0faff" opacity="0.7"/><rect x="10" y="2" width="3" height="4" fill="#d0faff" opacity="0.7"/><rect x="4" y="5" width="6" height="7" fill="#fffde0"/><rect x="4" y="1" width="6" height="5" fill="#f5e6c0"/><rect x="5" y="2" width="1" height="1" fill="#1a0a00"/><rect x="8" y="2" width="1" height="1" fill="#1a0a00"/><rect x="5" y="9" width="2" height="3" fill="#ffe0a0"/><rect x="7" y="9" width="2" height="3" fill="#ffe0a0"/></svg>`,
 `<svg width="14" height="16" viewBox="0 0 14 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="2" width="4" height="7" fill="#a8f0ff" opacity="0.85"/><rect x="10" y="2" width="4" height="7" fill="#a8f0ff" opacity="0.85"/><rect x="1" y="1" width="3" height="3" fill="#d0faff" opacity="0.7"/><rect x="10" y="1" width="3" height="3" fill="#d0faff" opacity="0.7"/><rect x="4" y="5" width="6" height="7" fill="#fffde0"/><rect x="4" y="2" width="6" height="5" fill="#f5e6c0"/><rect x="5" y="3" width="1" height="1" fill="#1a0a00"/><rect x="8" y="3" width="1" height="1" fill="#1a0a00"/><rect x="5" y="9" width="2" height="3" fill="#ffe0a0"/><rect x="7" y="9" width="2" height="3" fill="#ffe0a0"/></svg>`
 ];
-
 const MIST_COLORS=["rgba(58,140,255,0.75)","rgba(80,180,255,0.7)","rgba(40,100,220,0.8)","rgba(100,200,255,0.65)","rgba(30,80,200,0.75)"];
 const SPARK_COLORS=["rgba(255,255,150,0.95)","rgba(180,255,255,0.9)","rgba(255,200,255,0.85)","rgba(150,255,200,0.85)"];
 
+/* ─── LOCALSTORAGE HELPERS ─── */
+const STORAGE_KEY='sillage_collection_v1';
+const loadCollection=()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');}catch{return [];}};
+const saveCollection=(arr)=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(arr));}catch{}};
+
+/* ─── SPRITE CANVAS (unchanged) ─── */
 function SpriteCanvas(){
   const containerRef=useRef(null);
   const sRef=useRef({linkX:100,linkFacing:1,linkFrame:0,fairyFrame:0,fairyT:0,fairyX:0,fairyY:0,linkTop:0,mist:[],sparks:[],width:800,height:600});
   const rafRef=useRef(null),lastTRef=useRef(0),linkTickRef=useRef(0),fairyTickRef=useRef(0),dirRef=useRef(1);
   const [,tick]=useState(0);
-
   useEffect(()=>{
     const loop=(ts)=>{
-      const dt=ts-lastTRef.current; lastTRef.current=ts;
+      const dt=ts-lastTRef.current;lastTRef.current=ts;
       const s=sRef.current;
       if(containerRef.current){s.width=containerRef.current.offsetWidth;s.height=containerRef.current.offsetHeight;}
-      const lScale=2.25,lH=30*lScale;
-      s.linkTop=s.height-lH-10;
-
+      const lScale=2.25,lH=30*lScale;s.linkTop=s.height-lH-10;
       linkTickRef.current+=dt;
-      if(linkTickRef.current>140){
-        linkTickRef.current=0;
-        s.linkX+=dirRef.current*4;
-        if(s.linkX>s.width-80){dirRef.current=-1;s.linkFacing=-1;}
-        if(s.linkX<20){dirRef.current=1;s.linkFacing=1;}
-        s.linkFrame=(s.linkFrame+1)%2;
-      }
-
+      if(linkTickRef.current>140){linkTickRef.current=0;s.linkX+=dirRef.current*4;if(s.linkX>s.width-80){dirRef.current=-1;s.linkFacing=-1;}if(s.linkX<20){dirRef.current=1;s.linkFacing=1;}s.linkFrame=(s.linkFrame+1)%2;}
       fairyTickRef.current+=dt;
-      if(fairyTickRef.current>45){
-        fairyTickRef.current=0;
-        s.fairyT+=0.12;
-        s.fairyFrame=(s.fairyFrame+1)%2;
-        const to=s.linkFacing===1?-30:30;
-        const ox=s.linkX+10+to+Math.sin(s.fairyT*1.1)*8;
-        const oy=s.linkTop+8+Math.sin(s.fairyT*2.4)*10;
-        s.fairyX=ox;s.fairyY=oy;
-        for(let i=0;i<2;i++) s.sparks.push({id:Math.random(),x:ox+(Math.random()-.5)*10,y:oy+(Math.random()-.5)*10,color:SPARK_COLORS[Math.floor(Math.random()*SPARK_COLORS.length)],life:1,vx:(Math.random()-.5)*1.5,vy:-(Math.random()+0.3),size:Math.random()*8+4});
-        for(let i=0;i<3;i++){
-          const sz=Math.floor(Math.random()*2+1)*4;
-          s.mist.push({id:Math.random(),x:ox+(Math.random()-.5)*3,y:oy+(Math.random()-.5)*3,color:MIST_COLORS[Math.floor(Math.random()*MIST_COLORS.length)],life:1,vx:s.linkFacing===1?-(Math.random()*.5+.2):(Math.random()*.5+.2),vy:(Math.random()-.5)*.15,size:sz,wo:Math.random()*Math.PI*2,ws:Math.random()*.04+.02,wa:Math.random()*.6+.3,age:0});
-        }
-      }
-
+      if(fairyTickRef.current>45){fairyTickRef.current=0;s.fairyT+=0.12;s.fairyFrame=(s.fairyFrame+1)%2;const to=s.linkFacing===1?-30:30;const ox=s.linkX+10+to+Math.sin(s.fairyT*1.1)*8;const oy=s.linkTop+8+Math.sin(s.fairyT*2.4)*10;s.fairyX=ox;s.fairyY=oy;for(let i=0;i<2;i++)s.sparks.push({id:Math.random(),x:ox+(Math.random()-.5)*10,y:oy+(Math.random()-.5)*10,color:SPARK_COLORS[Math.floor(Math.random()*SPARK_COLORS.length)],life:1,vx:(Math.random()-.5)*1.5,vy:-(Math.random()+0.3),size:Math.random()*8+4});for(let i=0;i<3;i++){const sz=Math.floor(Math.random()*2+1)*4;s.mist.push({id:Math.random(),x:ox+(Math.random()-.5)*3,y:oy+(Math.random()-.5)*3,color:MIST_COLORS[Math.floor(Math.random()*MIST_COLORS.length)],life:1,vx:s.linkFacing===1?-(Math.random()*.5+.2):(Math.random()*.5+.2),vy:(Math.random()-.5)*.15,size:sz,wo:Math.random()*Math.PI*2,ws:Math.random()*.04+.02,wa:Math.random()*.6+.3,age:0});}}
       s.sparks=s.sparks.map(p=>({...p,life:p.life-.03,x:p.x+p.vx,y:p.y+p.vy})).filter(p=>p.life>0).slice(-50);
       s.mist=s.mist.map(p=>{const a=(p.age||0)+.016;return{...p,age:a,life:p.life-.004,x:p.x+p.vx,y:p.y+Math.sin(a*p.ws*60+p.wo)*p.wa};}).filter(p=>p.life>0).slice(-300);
-
-      tick(n=>n+1);
-      rafRef.current=requestAnimationFrame(loop);
+      tick(n=>n+1);rafRef.current=requestAnimationFrame(loop);
     };
-    rafRef.current=requestAnimationFrame(loop);
-    return()=>cancelAnimationFrame(rafRef.current);
+    rafRef.current=requestAnimationFrame(loop);return()=>cancelAnimationFrame(rafRef.current);
   },[]);
-
-  const s=sRef.current;
-  const lScale=2.25,lW=20*lScale,lH=30*lScale;
-  const lt=s.linkTop||(s.height-lH-10);
-
+  const s=sRef.current,lScale=2.25,lW=20*lScale,lH=30*lScale,lt=s.linkTop||(s.height-lH-10);
   return h('div',{ref:containerRef,style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:50,overflow:"hidden"}},
     ...s.mist.map(p=>h('div',{key:p.id,style:{position:"absolute",left:Math.round(p.x),top:Math.round(p.y),width:p.size,height:p.size,background:p.color,opacity:p.life*.9,imageRendering:"pixelated",pointerEvents:"none"}})),
     ...s.sparks.map(p=>h('div',{key:p.id,style:{position:"absolute",left:p.x,top:p.y,width:p.size,height:p.size,borderRadius:"50%",background:p.color,opacity:p.life*.9,filter:`blur(${Math.round(p.size*.25)}px)`,transform:"translate(-50%,-50%)",pointerEvents:"none"}})),
@@ -202,6 +124,7 @@ function SpriteCanvas(){
   );
 }
 
+/* ─── DIAGONAL REVEAL (unchanged) ─── */
 function DiagonalReveal({onComplete}){
   const [phase,setPhase]=useState(0);
   useEffect(()=>{const t1=setTimeout(()=>setPhase(1),100),t2=setTimeout(()=>{setPhase(2);onComplete();},1800);return()=>{clearTimeout(t1);clearTimeout(t2);};},[]);
@@ -213,6 +136,7 @@ function DiagonalReveal({onComplete}){
   );
 }
 
+/* ─── NOTES CHART (unchanged) ─── */
 function NotesChart({notes}){
   const rows=[{label:"Top Notes",icon:"✦",data:notes?.top,color:"#7ecfee"},{label:"Mid Notes",icon:"❋",data:notes?.mid,color:"#4a90d9"},{label:"Base Notes",icon:"◈",data:notes?.base,color:"#2558a8"}];
   return h('div',{style:{border:"1px solid rgba(58,155,213,0.3)",borderRadius:12,overflow:"hidden",marginTop:16}},
@@ -224,6 +148,7 @@ function NotesChart({notes}){
   );
 }
 
+/* ─── SECTION WRAPPER (unchanged) ─── */
 function Section({title,icon,children}){
   return h('div',{style:{marginTop:28,padding:"24px 28px",background:"rgba(10,30,60,0.5)",border:"1px solid rgba(58,155,213,0.2)",borderRadius:14,animation:"fadeSlideUp 0.5s ease both"}},
     h('div',{style:{display:"flex",alignItems:"center",gap:10,marginBottom:14}},
@@ -249,8 +174,357 @@ function LandmarkImage({name}){
   return h('img',{src:err?`https://picsum.photos/400/250`:`https://picsum.photos/seed/${seed}/400/250`,alt:name,style:{width:"100%",maxWidth:360,borderRadius:10,objectFit:"cover",border:"1px solid rgba(58,155,213,0.3)"},onError:()=>setErr(true)});
 }
 
+/* ─── HALF-STAR RATING ─── */
+function HalfStarRating({value,onChange}){
+  // value: 0–5 in 0.5 steps. 5 stars, each split left/right half.
+  const [hover,setHover]=useState(null);
+  const display=hover!==null?hover:value;
+
+  const handleMouse=(starIdx,e)=>{
+    const rect=e.currentTarget.getBoundingClientRect();
+    const x=e.clientX-rect.left;
+    const half=x<rect.width/2;
+    setHover(half?starIdx-0.5:starIdx);
+  };
+
+  const handleClick=(starIdx,e)=>{
+    const rect=e.currentTarget.getBoundingClientRect();
+    const x=e.clientX-rect.left;
+    const half=x<rect.width/2;
+    const val=half?starIdx-0.5:starIdx;
+    onChange(val===value?0:val); // tap same value to clear
+  };
+
+  return h('div',{style:{display:"flex",alignItems:"center",gap:4}},
+    [1,2,3,4,5].map(i=>{
+      const filled=display>=i?'full':display>=i-0.5?'half':'empty';
+      return h('div',{
+        key:i,
+        onMouseMove:(e)=>handleMouse(i,e),
+        onMouseLeave:()=>setHover(null),
+        onClick:(e)=>handleClick(i,e),
+        style:{cursor:"pointer",fontSize:32,lineHeight:1,position:"relative",width:36,height:36,display:"flex",alignItems:"center",justifyContent:"center",userSelect:"none"}
+      },
+        // Empty star (background)
+        h('span',{style:{position:"absolute",color:"rgba(58,155,213,0.2)"},dangerouslySetInnerHTML:{__html:"★"}}),
+        // Full or half fill
+        filled==='full'&&h('span',{style:{position:"absolute",color:"#7ecfee",filter:"drop-shadow(0 0 6px rgba(126,207,238,0.8))"},dangerouslySetInnerHTML:{__html:"★"}}),
+        filled==='half'&&h('span',{style:{position:"absolute",color:"transparent",backgroundImage:"linear-gradient(90deg,#7ecfee 50%,transparent 50%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",filter:"drop-shadow(0 0 4px rgba(126,207,238,0.6))"},dangerouslySetInnerHTML:{__html:"★"}})
+      );
+    }),
+    h('span',{style:{color:"rgba(126,207,238,0.6)",fontSize:13,marginLeft:8,fontFamily:"Georgia,serif",letterSpacing:1}},
+      display>0?`${display}/5`:"tap to rate"
+    )
+  );
+}
+
+/* ─── NOTE CHIP ─── */
+function NoteChip({label,layer,active,onToggle}){
+  const layerColors={top:{bg:"rgba(126,207,238,0.12)",border:"rgba(126,207,238,0.5)",text:"#7ecfee",dot:"#7ecfee"},mid:{bg:"rgba(74,144,217,0.12)",border:"rgba(74,144,217,0.5)",text:"#4a90d9",dot:"#4a90d9"},base:{bg:"rgba(37,88,168,0.12)",border:"rgba(37,88,168,0.5)",text:"#6699cc",dot:"#5577bb"},vibe:{bg:"rgba(180,120,255,0.1)",border:"rgba(180,120,255,0.45)",text:"#c09af0",dot:"#c09af0"}};
+  const c=layerColors[layer]||layerColors.top;
+  return h('button',{
+    onClick:onToggle,
+    style:{
+      display:"inline-flex",alignItems:"center",gap:6,
+      padding:"6px 14px",borderRadius:20,cursor:"pointer",
+      background:active?c.bg.replace('0.12','0.28'):c.bg,
+      border:`1px solid ${active?c.border:c.border.replace(/[\d.]+\)$/,'0.25)')}`,
+      color:active?c.text:c.text.replace(')',',0.6)').replace('rgb','rgba'),
+      fontSize:12,letterSpacing:0.8,fontFamily:"Georgia,serif",
+      transition:"all 0.15s ease",
+      animation:active?"chipPop 0.2s ease":"none",
+      boxShadow:active?`0 0 10px ${c.dot}33`:"none"
+    }
+  },
+    h('span',{style:{width:6,height:6,borderRadius:"50%",background:active?c.dot:"transparent",border:`1px solid ${c.dot}`,transition:"all 0.15s ease",flexShrink:0}}),
+    label
+  );
+}
+
+/* ─── SCENT LOGGER ─── */
+function ScentLogger({name,notes,vibe,onSaved}){
+  const [rating,setRating]=useState(0);
+  const [activeChips,setActiveChips]=useState(new Set());
+  const [freeNotes,setFreeNotes]=useState("");
+  const [saved,setSaved]=useState(false);
+  const [copied,setCopied]=useState(false);
+
+  // Parse note strings into arrays
+  const parseNotes=(str)=>str?str.split(',').map(s=>s.trim()).filter(Boolean):[];
+  const topNotes=parseNotes(notes?.top);
+  const midNotes=parseNotes(notes?.mid);
+  const baseNotes=parseNotes(notes?.base);
+
+  const toggleChip=(label)=>setActiveChips(prev=>{
+    const n=new Set(prev);
+    n.has(label)?n.delete(label):n.add(label);
+    return n;
+  });
+
+  const buildNotesText=()=>{
+    const chips=[...activeChips].join(", ");
+    const parts=[];
+    if(chips) parts.push(chips);
+    if(freeNotes.trim()) parts.push(freeNotes.trim());
+    return parts.join("\n\n");
+  };
+
+  const handleSave=()=>{
+    const entry={
+      id:Date.now(),
+      name,
+      rating,
+      notes:buildNotesText(),
+      chips:[...activeChips],
+      vibe:activeChips.has('__vibe__')?vibe:'',
+      date:new Date().toISOString()
+    };
+    const col=loadCollection();
+    // Replace if same name exists
+    const idx=col.findIndex(e=>e.name.toLowerCase()===name.toLowerCase());
+    if(idx>=0)col[idx]=entry;else col.unshift(entry);
+    saveCollection(col);
+    setSaved(true);
+    onSaved&&onSaved(entry);
+    setTimeout(()=>setSaved(false),2500);
+  };
+
+  const handleShare=()=>{
+    const stars="★".repeat(Math.floor(rating))+(rating%1?"½":"");
+    const text=`✦ ${name}\n${stars} (${rating}/5)\n\n${buildNotesText()}`;
+    if(navigator.share){navigator.share({text});}
+    else{navigator.clipboard.writeText(text).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});}
+  };
+
+  return h('div',{style:{marginTop:28,padding:"24px 28px",background:"rgba(10,20,50,0.65)",border:"1px solid rgba(126,207,238,0.25)",borderRadius:14,animation:"fadeSlideUp 0.5s ease both"}},
+    // Header
+    h('div',{style:{display:"flex",alignItems:"center",gap:10,marginBottom:20}},
+      h('span',{style:{fontSize:20}},"📝"),
+      h('h3',{style:{margin:0,color:"#7ecfee",fontSize:15,letterSpacing:2,textTransform:"uppercase",fontWeight:700}}),"Log This Scent"
+    ),
+
+    // Rating
+    h('div',{style:{marginBottom:22}},
+      h('p',{style:{color:"rgba(126,207,238,0.55)",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:10}},"Your Rating"),
+      h(HalfStarRating,{value:rating,onChange:setRating})
+    ),
+
+    // Top note chips
+    topNotes.length>0&&h('div',{style:{marginBottom:14}},
+      h('p',{style:{color:"#7ecfee",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}}),"✦ Top Notes",
+      h('div',{style:{display:"flex",flexWrap:"wrap",gap:8}},
+        topNotes.map(n=>h(NoteChip,{key:n,label:n,layer:"top",active:activeChips.has(n),onToggle:()=>toggleChip(n)}))
+      )
+    ),
+
+    // Mid note chips
+    midNotes.length>0&&h('div',{style:{marginBottom:14}},
+      h('p',{style:{color:"#4a90d9",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}}),"❋ Mid Notes",
+      h('div',{style:{display:"flex",flexWrap:"wrap",gap:8}},
+        midNotes.map(n=>h(NoteChip,{key:n,label:n,layer:"mid",active:activeChips.has(n),onToggle:()=>toggleChip(n)}))
+      )
+    ),
+
+    // Base / Dry Down chips
+    baseNotes.length>0&&h('div',{style:{marginBottom:16}},
+      h('p',{style:{color:"#6699cc",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}}),"◈ Dry Down",
+      h('div',{style:{display:"flex",flexWrap:"wrap",gap:8}},
+        baseNotes.map(n=>h(NoteChip,{key:n,label:n,layer:"base",active:activeChips.has(n),onToggle:()=>toggleChip(n)}))
+      )
+    ),
+
+    // Vibe sentence
+    vibe&&h('div',{style:{marginBottom:18}},
+      h('p',{style:{color:"#c09af0",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}}),"✧ Vibe",
+      h(NoteChip,{label:vibe,layer:"vibe",active:activeChips.has('__vibe__'),onToggle:()=>toggleChip('__vibe__')})
+    ),
+
+    // Free notes
+    h('div',{style:{marginBottom:20}},
+      h('p',{style:{color:"rgba(126,207,238,0.55)",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}}),"Personal Notes",
+      h('textarea',{
+        value:freeNotes,
+        onChange:e=>setFreeNotes(e.target.value),
+        placeholder:"First impressions, dry-down thoughts, when you'd wear this...",
+        rows:4,
+        style:{
+          width:"100%",padding:"14px 16px",
+          background:"rgba(4,12,28,0.8)",color:"#c8dff5",
+          border:"1px solid rgba(58,155,213,0.3)",borderRadius:10,
+          fontSize:14,fontFamily:"Georgia,serif",lineHeight:1.7,
+          letterSpacing:0.4
+        }
+      })
+    ),
+
+    // Action buttons
+    h('div',{style:{display:"flex",gap:12,flexWrap:"wrap"}},
+      h('button',{
+        onClick:handleSave,
+        style:{
+          flex:1,minWidth:120,padding:"14px 20px",
+          background:saved?"rgba(26,188,156,0.2)":"linear-gradient(135deg,#1e56a0,#3a9bd5)",
+          color:saved?"#1abc9c":"#e8f4ff",
+          border:`1px solid ${saved?"rgba(26,188,156,0.5)":"rgba(58,155,213,0.5)"}`,
+          borderRadius:10,cursor:"pointer",
+          fontSize:13,letterSpacing:2,fontFamily:"Georgia,serif",
+          textTransform:"uppercase",transition:"all 0.3s ease",
+          animation:saved?"savedPulse 0.5s ease":"none"
+        }
+      },saved?"✓ Saved!":"✦ Save to Collection"),
+      h('button',{
+        onClick:handleShare,
+        style:{
+          padding:"14px 20px",
+          background:"rgba(126,207,238,0.08)",color:copied?"#1abc9c":"#7ecfee",
+          border:"1px solid rgba(126,207,238,0.3)",borderRadius:10,
+          cursor:"pointer",fontSize:13,letterSpacing:2,fontFamily:"Georgia,serif",
+          textTransform:"uppercase",transition:"all 0.3s ease"
+        }
+      },copied?"✓ Copied!":"⬡ Share / Copy")
+    )
+  );
+}
+
+/* ─── COLLECTION VIEW ─── */
+function CollectionView(){
+  const [col,setCol]=useState([]);
+  const [search,setSearch]=useState("");
+  const [expanded,setExpanded]=useState(null);
+  const [sortBy,setSortBy]=useState("date"); // "date" | "rating" | "name"
+
+  useEffect(()=>{setCol(loadCollection());},[]);
+
+  const filtered=col
+    .filter(e=>e.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a,b)=>{
+      if(sortBy==="rating")return b.rating-a.rating;
+      if(sortBy==="name")return a.name.localeCompare(b.name);
+      return new Date(b.date)-new Date(a.date);
+    });
+
+  const deleteEntry=(id)=>{
+    const updated=col.filter(e=>e.id!==id);
+    saveCollection(updated);setCol(updated);setExpanded(null);
+  };
+
+  const renderStars=(r)=>{
+    if(!r)return h('span',{style:{color:"rgba(126,207,238,0.3)",fontSize:12}},"Not rated");
+    const full=Math.floor(r),half=r%1>0;
+    return h('span',{style:{color:"#7ecfee",fontSize:14,filter:"drop-shadow(0 0 4px rgba(126,207,238,0.5))"}},
+      "★".repeat(full)+(half?"½":"")+"☆".repeat(5-full-(half?1:0)),
+      h('span',{style:{color:"rgba(126,207,238,0.6)",fontSize:11,marginLeft:6,fontFamily:"Georgia,serif"}},`${r}/5`)
+    );
+  };
+
+  if(col.length===0)return h('div',{style:{textAlign:"center",padding:"80px 24px"}},
+    h('p',{style:{fontSize:32,marginBottom:16}}),"⚗️",
+    h('p',{style:{color:"rgba(126,207,238,0.4)",letterSpacing:3,textTransform:"uppercase",fontSize:13}}),"Your collection is empty",
+    h('p',{style:{color:"rgba(126,207,238,0.25)",fontSize:12,marginTop:8,letterSpacing:1}}),"Analyze a fragrance and log it to start"
+  );
+
+  return h('div',{style:{paddingTop:16}},
+    // Search + sort bar
+    h('div',{style:{display:"flex",gap:12,marginBottom:24,flexWrap:"wrap"}},
+      h('input',{
+        value:search,onChange:e=>setSearch(e.target.value),
+        placeholder:"Search your collection...",
+        style:{flex:1,minWidth:160,padding:"12px 18px",background:"rgba(4,12,28,0.9)",color:"#e8f4ff",border:"1px solid rgba(58,155,213,0.3)",borderRadius:10,fontSize:14,fontFamily:"Georgia,serif",letterSpacing:0.8}
+      }),
+      h('select',{
+        value:sortBy,onChange:e=>setSortBy(e.target.value),
+        style:{padding:"12px 14px",background:"rgba(4,12,28,0.9)",color:"#7ecfee",border:"1px solid rgba(58,155,213,0.3)",borderRadius:10,fontSize:13,fontFamily:"Georgia,serif",cursor:"pointer"}
+      },
+        h('option',{value:"date"},"Newest"),
+        h('option',{value:"rating"},"Top Rated"),
+        h('option',{value:"name"},"A → Z")
+      )
+    ),
+
+    // Count
+    h('p',{style:{color:"rgba(126,207,238,0.35)",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:16}},
+      `${filtered.length} fragrance${filtered.length!==1?"s":""} logged`
+    ),
+
+    // Cards
+    h('div',{style:{display:"flex",flexDirection:"column",gap:12}},
+      filtered.map(entry=>{
+        const isOpen=expanded===entry.id;
+        return h('div',{key:entry.id,
+          style:{
+            background:"rgba(10,24,52,0.6)",
+            border:`1px solid ${isOpen?"rgba(126,207,238,0.35)":"rgba(58,155,213,0.18)"}`,
+            borderRadius:12,overflow:"hidden",transition:"border-color 0.2s ease"
+          }
+        },
+          // Card header
+          h('div',{
+            onClick:()=>setExpanded(isOpen?null:entry.id),
+            style:{
+              display:"flex",alignItems:"center",justifyContent:"space-between",
+              padding:"16px 20px",cursor:"pointer",gap:12
+            }
+          },
+            h('div',{style:{flex:1,minWidth:0}},
+              h('p',{style:{color:"#a8d8f0",fontSize:15,fontWeight:700,letterSpacing:1,marginBottom:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},entry.name),
+              renderStars(entry.rating)
+            ),
+            h('div',{style:{display:"flex",alignItems:"center",gap:10,flexShrink:0}},
+              h('span',{style:{color:"rgba(126,207,238,0.3)",fontSize:11}},new Date(entry.date).toLocaleDateString()),
+              h('span',{style:{color:"rgba(126,207,238,0.4)",fontSize:16,transition:"transform 0.2s ease",transform:isOpen?"rotate(180deg)":"rotate(0deg)"}}),"▾"
+            )
+          ),
+
+          // Expanded detail
+          isOpen&&h('div',{style:{padding:"0 20px 20px",borderTop:"1px solid rgba(58,155,213,0.12)"}},
+            entry.chips?.length>0&&h('div',{style:{marginTop:14,marginBottom:12}},
+              h('p',{style:{color:"rgba(126,207,238,0.4)",fontSize:11,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}),"Noted",
+              h('div',{style:{display:"flex",flexWrap:"wrap",gap:6}},
+                entry.chips.filter(c=>c!=='__vibe__').map(c=>h('span',{key:c,style:{padding:"4px 12px",borderRadius:16,background:"rgba(58,155,213,0.1)",border:"1px solid rgba(58,155,213,0.25)",color:"#7ecfee",fontSize:12}},c))
+              )
+            ),
+            entry.vibe&&h('div',{style:{marginTop:12,marginBottom:12,padding:"10px 14px",background:"rgba(180,120,255,0.07)",border:"1px solid rgba(180,120,255,0.2)",borderRadius:8}},
+              h('p',{style:{color:"#c09af0",fontSize:13,fontStyle:"italic",lineHeight:1.6}},`"${entry.vibe}"`)
+            ),
+            entry.notes&&h('div',{style:{marginTop:12}},
+              h('p',{style:{color:"rgba(126,207,238,0.4)",fontSize:11,letterSpacing:2,textTransform:"uppercase",marginBottom:6}}),"Notes",
+              h('p',{style:{color:"#c8dff5",fontSize:13,lineHeight:1.7,whiteSpace:"pre-wrap"}},entry.notes)
+            ),
+            h('button',{
+              onClick:()=>deleteEntry(entry.id),
+              style:{marginTop:16,padding:"8px 16px",background:"rgba(231,76,60,0.08)",color:"rgba(231,76,60,0.6)",border:"1px solid rgba(231,76,60,0.2)",borderRadius:8,cursor:"pointer",fontSize:12,letterSpacing:1,fontFamily:"Georgia,serif",transition:"all 0.2s ease"}
+            },"✗ Remove")
+          )
+        );
+      })
+    )
+  );
+}
+
+/* ─── TAB NAV ─── */
+function TabNav({active,onChange,collectionCount}){
+  const tabs=[{id:"analyzer",label:"Oracle",icon:"⚗️"},{id:"collection",label:`Collection${collectionCount>0?" ("+collectionCount+")":""}`,icon:"✦"}];
+  return h('div',{style:{position:"sticky",top:0,zIndex:30,background:"rgba(4,8,15,0.92)",backdropFilter:"blur(16px)",borderBottom:"1px solid rgba(58,155,213,0.15)",padding:"0 24px"}},
+    h('div',{style:{maxWidth:760,margin:"0 auto",display:"flex",gap:0}},
+      tabs.map(t=>h('button',{
+        key:t.id,
+        onClick:()=>onChange(t.id),
+        style:{
+          padding:"16px 20px",background:"none",
+          color:active===t.id?"#7ecfee":"rgba(126,207,238,0.35)",
+          border:"none",borderBottom:`2px solid ${active===t.id?"#3a9bd5":"transparent"}`,
+          cursor:"pointer",fontSize:13,letterSpacing:2,fontFamily:"Georgia,serif",
+          textTransform:"uppercase",transition:"all 0.2s ease",
+          display:"flex",alignItems:"center",gap:8
+        }
+      },h('span',null,t.icon),t.label))
+    )
+  );
+}
+
+/* ─── API HELPERS ─── */
 const callAPI=async(prompt)=>{
-  const res=await fetch("/.netlify/functions/claude-proxy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2048,messages:[{role:"user",content:prompt}]})});
+  const res=await fetch("/.netlify/functions/claude-proxy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:2048,messages:[{role:"user",content:prompt}]})});
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`API error ${res.status}`);}
   const data=await res.json();
   const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim();
@@ -259,15 +533,22 @@ const callAPI=async(prompt)=>{
   return JSON.parse(m[0]);
 };
 
+/* ─── MAIN APP ─── */
 function App(){
   const [revealed,setRevealed]=useState(false);
+  const [tab,setTab]=useState("analyzer");
   const [fragrance,setFragrance]=useState("");
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState("");
   const [confirmedName,setConfirmedName]=useState("");
   const [sections,setSections]=useState({});
   const [stepStatus,setStepStatus]=useState({});
+  const [collectionCount,setCollectionCount]=useState(0);
   const resultRef=useRef(null);
+  const loggerRef=useRef(null);
+
+  useEffect(()=>{setCollectionCount(loadCollection().length);},[]);
+
   const setStep=(label,status)=>setStepStatus(p=>({...p,[label]:status}));
 
   const analyze=async()=>{
@@ -277,7 +558,7 @@ function App(){
       setStep("Identifying fragrance","active");
       let resolved={fragrance_full_name:fragrance.trim(),house:"",country:""};
       try{
-        const res=await fetch("/.netlify/functions/claude-proxy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Search for the fragrance: "${fragrance.trim()}". Return ONLY a JSON object with keys "fragrance_full_name","house","country". No markdown.`}]})});
+        const res=await fetch("/.netlify/functions/claude-proxy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:300,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Search for the fragrance: "${fragrance.trim()}". Return ONLY a JSON object with keys "fragrance_full_name","house","country". No markdown.`}]})});
         const data=await res.json();
         const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("").replace(/```json|```/g,"").trim();
         const m=text.match(/\{[\s\S]*?\}/);
@@ -290,84 +571,123 @@ function App(){
       setStep("Analyzing fragrance","active");
 
       const n=resolved.fragrance_full_name,ho=resolved.house,co=resolved.country;
-      const [meta,creative,geo]=await Promise.all([
+
+      const [meta,creative,geo,vibe]=await Promise.all([
         callAPI(`You are a fragrance expert. For "${n}" by ${ho} from ${co}. Return ONLY valid JSON (no markdown): {"origin":"One sentence: when founded, where, and the creative vision.","notes":{"top":"comma-separated top notes","mid":"comma-separated mid notes","base":"comma-separated base notes"},"description":"Three paragraphs of rich evocative description. Use \\n\\n between paragraphs."}`),
         callAPI(`You are a creative writer. For "${n}" from ${co}. Return ONLY valid JSON (no markdown): {"marvel":"2-3 sentences: specific X-Men or Marvel character scene WITHOUT mentioning smell or scent.","videogame":"2-3 sentences: specific video game character scene WITHOUT mentioning smell or scent. Name the game.","popdiva":{"artist":"pop diva name","song":"exact real song title","description":"2-3 sentences associating the song mood with this fragrance. No smell references."}}`),
-        callAPI(`You are a travel and fragrance expert. For "${n}" from ${co}. Return ONLY valid JSON (no markdown): {"landmark":{"landmark_name":"exact real famous world landmark","wiki_title":"exact Wikipedia article title","country":"country","description":"2-3 sentences on why this landmark matches this fragrance."}}`)
+        callAPI(`You are a travel and fragrance expert. For "${n}" from ${co}. Return ONLY valid JSON (no markdown): {"landmark":{"landmark_name":"exact real famous world landmark","wiki_title":"exact Wikipedia article title","country":"country","description":"2-3 sentences on why this landmark matches this fragrance."}}`),
+        callAPI(`You are a fragrance poet. For "${n}". Return ONLY valid JSON (no markdown): {"vibe":"One vivid evocative scenario sentence (20-35 words) describing the feeling and world of this fragrance, like 'Feels like walking through a Nordic pine forest at dusk with a warm cabin fireplace glowing through frosted windows.' Make it specific and sensory but never mention the word scent or smell."}`)
       ]);
 
-      const full={...meta,...creative,...geo};
+      const full={...meta,...creative,...geo,...vibe};
       if(full.landmark?.wiki_title){const wt=encodeURIComponent(full.landmark.wiki_title.replace(/ /g,"_"));full.landmark.wiki_url=`https://en.wikipedia.org/wiki/${wt}`;}
       setSections(full);
       setStep("Analyzing fragrance","done");
+      setTimeout(()=>loggerRef.current?.scrollIntoView({behavior:"smooth",block:"start"}),400);
     }catch(e){console.error(e);setError(`Something went wrong: ${e.message}`);}
     setLoading(false);
+  };
+
+  const handleSaved=(entry)=>{
+    setCollectionCount(loadCollection().length);
   };
 
   const sec=sections,hasAny=Object.keys(sec).length>0,steps=Object.entries(stepStatus);
   const txt=(t,s={})=>h('p',{style:{color:"#c8dff5",lineHeight:1.8,margin:0,...s}},t);
 
   return h('div',{style:{minHeight:"100vh",background:"#04080f",color:"#e8f4ff",fontFamily:"Georgia,serif",position:"relative",overflow:"hidden"}},
-              h('div',{style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",backgroundImage:"url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1600&q=80')",backgroundSize:"cover",backgroundPosition:"center bottom",opacity:.28,zIndex:0}}),
-          h('div',{style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",backgroundImage:"url('https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?w=1600&q=80')",backgroundSize:"cover",backgroundPosition:"center top",opacity:.18,zIndex:0,mixBlendMode:"screen"}}),
+    // Backgrounds
+    h('div',{style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",backgroundImage:"url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1600&q=80')",backgroundSize:"cover",backgroundPosition:"center bottom",opacity:.28,zIndex:0}}),
+    h('div',{style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",backgroundImage:"url('https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?w=1600&q=80')",backgroundSize:"cover",backgroundPosition:"center top",opacity:.18,zIndex:0,mixBlendMode:"screen"}}),
     h('div',{style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",backgroundImage:"linear-gradient(rgba(58,155,213,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(58,155,213,0.05) 1px,transparent 1px)",backgroundSize:"48px 48px",zIndex:1}}),
     h('div',{style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",background:"radial-gradient(ellipse at center,transparent 35%,rgba(2,5,15,0.9) 100%)",zIndex:2}}),
     h(DiagonalReveal,{onComplete:()=>setRevealed(true)}),
     h(SpriteCanvas,null),
+
+    // Tab nav
+    revealed&&h(TabNav,{active:tab,onChange:setTab,collectionCount}),
+
+    // Content
     h('div',{style:{position:"relative",zIndex:10,maxWidth:760,margin:"0 auto",padding:"0 24px 120px"}},
-      h('div',{style:{minHeight:"100vh",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",textAlign:"center",opacity:revealed?1:0,transition:"opacity 0.8s ease 0.3s"}},
-        h('div',{style:{animation:"float 4s ease-in-out infinite"}},
-          h('p',{style:{color:"rgba(126,207,238,0.55)",fontSize:11,letterSpacing:6,textTransform:"uppercase",margin:"0 0 12px 0"}},"✦ FRAGRANCE ORACLE ✦"),
-          h('h1',{style:{fontSize:"clamp(2.4rem,7vw,4.2rem)",fontWeight:400,margin:"0 0 8px 0",letterSpacing:3,background:"linear-gradient(135deg,#a8d8f0,#3a9bd5,#1e56a0)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}},"Sillage"),
-          h('h1',{style:{fontSize:"clamp(1.4rem,4vw,2.2rem)",fontWeight:400,margin:"0 0 32px 0",letterSpacing:8,color:"rgba(126,207,238,0.65)"}},"SIDE QUEST")
-        ),
-        h('p',{style:{color:"rgba(126,207,238,0.45)",fontSize:13,letterSpacing:2,marginBottom:40,textTransform:"uppercase"}},"Enter a fragrance. Begin the journey."),
-        h('div',{style:{display:"flex",width:"100%",maxWidth:520}},
-          h('input',{value:fragrance,onChange:e=>{setFragrance(e.target.value);setError("");},onKeyDown:e=>e.key==="Enter"&&!loading&&analyze(),placeholder:"e.g. Bleu de Chanel, Black Orchid...",style:{flex:1,padding:"18px 24px",fontSize:15,background:"rgba(4,12,28,0.9)",color:"#e8f4ff",border:"1px solid rgba(58,155,213,0.35)",borderRight:"none",borderRadius:"10px 0 0 10px",letterSpacing:1,fontFamily:"Georgia,serif"}}),
-          h('button',{onClick:analyze,disabled:loading||!fragrance.trim(),style:{padding:"18px 28px",fontSize:13,letterSpacing:2,background:loading?"rgba(58,155,213,0.2)":"linear-gradient(135deg,#1e56a0,#3a9bd5)",color:"#e8f4ff",border:"1px solid rgba(58,155,213,0.5)",borderRadius:"0 10px 10px 0",cursor:loading?"default":"pointer",textTransform:"uppercase",fontFamily:"Georgia,serif",transition:"all 0.3s ease",whiteSpace:"nowrap",animation:loading?"revealPulse 1.2s ease-in-out infinite":"none"}},
-            loading?(stepStatus["Identifying fragrance"]==="done"?"✦ Analyzing...":"✦ Searching..."):"✦ Reveal")
-        ),
-        error&&h('p',{style:{color:"#e74c3c",marginTop:16,fontSize:13,maxWidth:520,textAlign:"center"}},`⚠ ${error}`),
-        loading&&steps.length>0&&h('div',{style:{marginTop:24,maxWidth:300}},
-          ...steps.map(([label,status])=>h(StatusBadge,{key:label,label,status}))
-        )
-      ),
-      h('div',{ref:resultRef},
-        hasAny&&h('div',null,
-          h('div',{style:{textAlign:"center",marginBottom:32,paddingTop:8,animation:"fadeSlideUp 0.4s ease both"}},
-            h('p',{style:{color:"rgba(126,207,238,0.45)",fontSize:11,letterSpacing:4,textTransform:"uppercase",margin:"0 0 6px 0"}},"✦ confirmed fragrance ✦"),
-            h('h2',{style:{fontSize:"clamp(1.2rem,3.5vw,1.8rem)",fontWeight:400,letterSpacing:3,background:"linear-gradient(135deg,#a8d8f0,#3a9bd5)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"0 0 10px 0"}},
-              confirmedName, loading&&h('span',{style:{animation:"blink 1s infinite",marginLeft:4}},"|")
-            ),
-            h('div',{style:{height:1,background:"linear-gradient(90deg,transparent,rgba(58,155,213,0.5),transparent)"}})
+
+      // ── ANALYZER TAB ──
+      tab==="analyzer"&&h(Fragment,null,
+        // Hero
+        h('div',{style:{minHeight:"90vh",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",textAlign:"center",opacity:revealed?1:0,transition:"opacity 0.8s ease 0.3s"}},
+          h('div',{style:{animation:"float 4s ease-in-out infinite"}},
+            h('p',{style:{color:"rgba(126,207,238,0.55)",fontSize:11,letterSpacing:6,textTransform:"uppercase",margin:"0 0 12px 0"}},"✦ FRAGRANCE ORACLE ✦"),
+            h('h1',{style:{fontSize:"clamp(2.4rem,7vw,4.2rem)",fontWeight:400,margin:"0 0 8px 0",letterSpacing:3,background:"linear-gradient(135deg,#a8d8f0,#3a9bd5,#1e56a0)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}},"Sillage"),
+            h('h1',{style:{fontSize:"clamp(1.4rem,4vw,2.2rem)",fontWeight:400,margin:"0 0 32px 0",letterSpacing:8,color:"rgba(126,207,238,0.65)"}},"SIDE QUEST")
           ),
-          sec.origin&&h(Section,{title:"Origin Story",icon:"📜"},txt(sec.origin)),
-          sec.notes&&h(Section,{title:"Scent Notes",icon:"⚗️"},h(NotesChart,{notes:sec.notes})),
-          sec.description&&h(Section,{title:"Fragrance Description",icon:"🌫️"},txt(sec.description,{whiteSpace:"pre-wrap"})),
-          sec.marvel&&h(Section,{title:"Marvel / X-Men Vignette",icon:"⚡"},txt(sec.marvel)),
-          sec.videogame&&h(Section,{title:"Video Game Vignette",icon:"🎮"},txt(sec.videogame)),
-          sec.landmark&&h(Section,{title:"Tourist Landmark",icon:"🗺️"},
-            txt(sec.landmark.description,{margin:"0 0 14px 0"}),
-            h('div',{style:{display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}},
-              h(LandmarkImage,{name:sec.landmark.landmark_name}),
-              h('div',null,
-                h('p',{style:{color:"#7ecfee",fontWeight:700,fontSize:16,margin:"0 0 4px 0"}},sec.landmark.landmark_name),
-                h('p',{style:{color:"#aac4e0",fontSize:13,margin:"0 0 10px 0"}},sec.landmark.country),
-                sec.landmark.wiki_url&&h('a',{href:sec.landmark.wiki_url,target:"_blank",rel:"noreferrer",style:{display:"inline-block",padding:"8px 16px",background:"rgba(58,155,213,0.15)",border:"1px solid rgba(58,155,213,0.4)",borderRadius:8,color:"#7ecfee",textDecoration:"none",fontSize:13,letterSpacing:1}},"Wikipedia ↗")
+          h('p',{style:{color:"rgba(126,207,238,0.45)",fontSize:13,letterSpacing:2,marginBottom:40,textTransform:"uppercase"}},"Enter a fragrance. Begin the journey."),
+          h('div',{style:{display:"flex",width:"100%",maxWidth:520}},
+            h('input',{value:fragrance,onChange:e=>{setFragrance(e.target.value);setError("");},onKeyDown:e=>e.key==="Enter"&&!loading&&analyze(),placeholder:"e.g. Bleu de Chanel, Black Orchid...",style:{flex:1,padding:"18px 24px",fontSize:15,background:"rgba(4,12,28,0.9)",color:"#e8f4ff",border:"1px solid rgba(58,155,213,0.35)",borderRight:"none",borderRadius:"10px 0 0 10px",letterSpacing:1,fontFamily:"Georgia,serif"}}),
+            h('button',{onClick:analyze,disabled:loading||!fragrance.trim(),style:{padding:"18px 28px",fontSize:13,letterSpacing:2,background:loading?"rgba(58,155,213,0.2)":"linear-gradient(135deg,#1e56a0,#3a9bd5)",color:"#e8f4ff",border:"1px solid rgba(58,155,213,0.5)",borderRadius:"0 10px 10px 0",cursor:loading?"default":"pointer",textTransform:"uppercase",fontFamily:"Georgia,serif",transition:"all 0.3s ease",whiteSpace:"nowrap",animation:loading?"revealPulse 1.2s ease-in-out infinite":"none"}},
+              loading?(stepStatus["Identifying fragrance"]==="done"?"✦ Analyzing...":"✦ Searching..."):"✦ Reveal")
+          ),
+          error&&h('p',{style:{color:"#e74c3c",marginTop:16,fontSize:13,maxWidth:520,textAlign:"center"}},`⚠ ${error}`),
+          loading&&steps.length>0&&h('div',{style:{marginTop:24,maxWidth:300}},
+            ...steps.map(([label,status])=>h(StatusBadge,{key:label,label,status}))
+          )
+        ),
+
+        // Results
+        h('div',{ref:resultRef},
+          hasAny&&h('div',null,
+            h('div',{style:{textAlign:"center",marginBottom:32,paddingTop:8,animation:"fadeSlideUp 0.4s ease both"}},
+              h('p',{style:{color:"rgba(126,207,238,0.45)",fontSize:11,letterSpacing:4,textTransform:"uppercase",margin:"0 0 6px 0"}},"✦ confirmed fragrance ✦"),
+              h('h2',{style:{fontSize:"clamp(1.2rem,3.5vw,1.8rem)",fontWeight:400,letterSpacing:3,background:"linear-gradient(135deg,#a8d8f0,#3a9bd5)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"0 0 10px 0"}},confirmedName,loading&&h('span',{style:{animation:"blink 1s infinite",marginLeft:4}},"|")),
+              h('div',{style:{height:1,background:"linear-gradient(90deg,transparent,rgba(58,155,213,0.5),transparent)"}})
+            ),
+
+            sec.origin&&h(Section,{title:"Origin Story",icon:"📜"},txt(sec.origin)),
+            sec.notes&&h(Section,{title:"Scent Notes",icon:"⚗️"},h(NotesChart,{notes:sec.notes})),
+            sec.description&&h(Section,{title:"Fragrance Description",icon:"🌫️"},txt(sec.description,{whiteSpace:"pre-wrap"})),
+            sec.marvel&&h(Section,{title:"Marvel / X-Men Vignette",icon:"⚡"},txt(sec.marvel)),
+            sec.videogame&&h(Section,{title:"Video Game Vignette",icon:"🎮"},txt(sec.videogame)),
+            sec.landmark&&h(Section,{title:"Tourist Landmark",icon:"🗺️"},
+              txt(sec.landmark.description,{margin:"0 0 14px 0"}),
+              h('div',{style:{display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}},
+                h(LandmarkImage,{name:sec.landmark.landmark_name}),
+                h('div',null,
+                  h('p',{style:{color:"#7ecfee",fontWeight:700,fontSize:16,margin:"0 0 4px 0"}},sec.landmark.landmark_name),
+                  h('p',{style:{color:"#aac4e0",fontSize:13,margin:"0 0 10px 0"}},sec.landmark.country),
+                  sec.landmark.wiki_url&&h('a',{href:sec.landmark.wiki_url,target:"_blank",rel:"noreferrer",style:{display:"inline-block",padding:"8px 16px",background:"rgba(58,155,213,0.15)",border:"1px solid rgba(58,155,213,0.4)",borderRadius:8,color:"#7ecfee",textDecoration:"none",fontSize:13,letterSpacing:1}},"Wikipedia ↗")
+                )
               )
+            ),
+            sec.popdiva&&h(Section,{title:"Pop Diva Anthem",icon:"🎤"},
+              h('div',{style:{display:"flex",alignItems:"center",gap:12,marginBottom:12,flexWrap:"wrap"}},
+                h('div',{style:{padding:"6px 14px",background:"rgba(58,155,213,0.15)",border:"1px solid rgba(58,155,213,0.3)",borderRadius:20}},
+                  h('span',{style:{color:"#7ecfee",fontSize:13,fontWeight:700}},sec.popdiva.artist),
+                  h('span',{style:{color:"rgba(126,207,238,0.5)",fontSize:13,margin:"0 6px"}},"—"),
+                  h('span',{style:{color:"#c8dff5",fontSize:13,fontStyle:"italic"}},`"${sec.popdiva.song}"`)
+                )
+              ),
+              txt(sec.popdiva.description)
+            ),
+
+            // ── SCENT LOGGER ──
+            h('div',{ref:loggerRef},
+              h(ScentLogger,{
+                name:confirmedName,
+                notes:sec.notes,
+                vibe:sec.vibe,
+                onSaved:handleSaved
+              })
             )
-          ),
-          sec.popdiva&&h(Section,{title:"Pop Diva Anthem",icon:"🎤"},
-            h('div',{style:{display:"flex",alignItems:"center",gap:12,marginBottom:12,flexWrap:"wrap"}},
-              h('div',{style:{padding:"6px 14px",background:"rgba(58,155,213,0.15)",border:"1px solid rgba(58,155,213,0.3)",borderRadius:20}},
-                h('span',{style:{color:"#7ecfee",fontSize:13,fontWeight:700}},sec.popdiva.artist),
-                h('span',{style:{color:"rgba(126,207,238,0.5)",fontSize:13,margin:"0 6px"}},"—"),
-                h('span',{style:{color:"#c8dff5",fontSize:13,fontStyle:"italic"}},`"${sec.popdiva.song}"`)
-              )
-            ),
-            txt(sec.popdiva.description)
           )
         )
+      ),
+
+      // ── COLLECTION TAB ──
+      tab==="collection"&&h('div',{style:{paddingTop:40,opacity:revealed?1:0,transition:"opacity 0.5s ease"}},
+        h('div',{style:{textAlign:"center",marginBottom:32}},
+          h('p',{style:{color:"rgba(126,207,238,0.45)",fontSize:11,letterSpacing:4,textTransform:"uppercase",margin:"0 0 6px 0"}},"✦ YOUR SILLAGE ✦"),
+          h('h2',{style:{fontSize:"clamp(1.2rem,3.5vw,1.8rem)",fontWeight:400,letterSpacing:3,background:"linear-gradient(135deg,#a8d8f0,#3a9bd5)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"0 0 10px 0"}},"My Collection"),
+          h('div',{style:{height:1,background:"linear-gradient(90deg,transparent,rgba(58,155,213,0.5),transparent)"}})
+        ),
+        h(CollectionView,null)
       )
     )
   );
