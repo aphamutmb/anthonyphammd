@@ -10,10 +10,32 @@
   <meta name="theme-color" content="#04080f"/>
   <link rel="apple-touch-icon" sizes="180x180" id="appicon"/>
   <link rel="shortcut icon" id="favicon"/>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#04080f}
+    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-8px)}}
+    @keyframes revealPulse{0%{box-shadow:0 0 0 0 rgba(58,155,213,0.7)}50%{box-shadow:0 0 18px 4px rgba(58,155,213,0.4)}100%{box-shadow:0 0 0 0 rgba(58,155,213,0.7)}}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    @keyframes chipPop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+    @keyframes savedPulse{0%{opacity:1;transform:scale(1)}50%{opacity:0.7;transform:scale(0.97)}100%{opacity:1;transform:scale(1)}}
+    input::placeholder,textarea::placeholder{color:rgba(126,207,238,0.35)}
+    input:focus,textarea:focus{outline:none;border-color:rgba(58,155,213,0.8)!important;box-shadow:0 0 30px rgba(58,155,213,0.25)!important}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:#04080f}
+    ::-webkit-scrollbar-thumb{background:rgba(58,155,213,0.4);border-radius:3px}
+    textarea{resize:vertical}
+  </style>
 </head>
 <body>
-<div id="root"></div>
+
 <canvas id="iconCanvas" width="180" height="180" style="display:none"></canvas>
+<div id="root"></div>
+
 <script>
 (function(){
   const c=document.getElementById('iconCanvas'),ctx=c.getContext('2d'),w=180,h=180;
@@ -48,31 +70,11 @@
   function wisp(ctx,x,y,r,op){const g=ctx.createRadialGradient(x,y,0,x,y,r*2);g.addColorStop(0,`rgba(58,155,213,${op})`);g.addColorStop(1,'rgba(58,155,213,0)');ctx.beginPath();ctx.arc(x,y,r*2,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();}
 })();
 </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#04080f}
-    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-8px)}}
-    @keyframes revealPulse{0%{box-shadow:0 0 0 0 rgba(58,155,213,0.7)}50%{box-shadow:0 0 18px 4px rgba(58,155,213,0.4)}100%{box-shadow:0 0 0 0 rgba(58,155,213,0.7)}}
-    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-    @keyframes chipPop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
-    @keyframes savedPulse{0%{opacity:1;transform:scale(1)}50%{opacity:0.7;transform:scale(0.97)}100%{opacity:1;transform:scale(1)}}
-    input::placeholder,textarea::placeholder{color:rgba(126,207,238,0.35)}
-    input:focus,textarea:focus{outline:none;border-color:rgba(58,155,213,0.8)!important;box-shadow:0 0 30px rgba(58,155,213,0.25)!important}
-    ::-webkit-scrollbar{width:6px}
-    ::-webkit-scrollbar-track{background:#04080f}
-    ::-webkit-scrollbar-thumb{background:rgba(58,155,213,0.4);border-radius:3px}
-    textarea{resize:vertical}
-  </style>
-</head>
-<body>
-<div id="root"></div>
+
 <script type="module">
 const {useState,useEffect,useRef,useCallback,createElement:h,Fragment}=React;
 
-/* ─── LINK / FAIRY SPRITES (unchanged) ─── */
+/* ─── LINK / FAIRY SPRITES ─── */
 const LINK_FRAMES=[
 `<svg width="20" height="30" viewBox="0 0 20 30" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="5" y="0" width="10" height="2" fill="#2d7a1f"/><rect x="4" y="2" width="12" height="2" fill="#2d7a1f"/><rect x="3" y="4" width="14" height="3" fill="#3a9e28"/><rect x="13" y="1" width="4" height="2" fill="#2d7a1f"/><rect x="4" y="7" width="12" height="8" fill="#f5c27a"/><rect x="6" y="9" width="2" height="2" fill="#1a0a00"/><rect x="12" y="9" width="2" height="2" fill="#1a0a00"/><rect x="2" y="9" width="2" height="3" fill="#f5c27a"/><rect x="16" y="9" width="2" height="3" fill="#f5c27a"/><rect x="1" y="8" width="2" height="2" fill="#f5c27a"/><rect x="17" y="8" width="2" height="2" fill="#f5c27a"/><rect x="3" y="15" width="14" height="9" fill="#3a9e28"/><rect x="3" y="22" width="14" height="2" fill="#8B5e1a"/><rect x="0" y="15" width="3" height="6" fill="#cc2200"/><rect x="1" y="16" width="1" height="4" fill="#f5c27a"/><rect x="17" y="13" width="3" height="7" fill="#3a9e28"/><rect x="17" y="20" width="3" height="2" fill="#f5c27a"/><rect x="19" y="5" width="2" height="10" fill="#c0c0c0"/><rect x="17" y="12" width="4" height="2" fill="#c8960c"/><rect x="4" y="24" width="5" height="4" fill="#8B5e1a"/><rect x="11" y="24" width="5" height="4" fill="#8B5e1a"/><rect x="3" y="28" width="6" height="2" fill="#3a2000"/><rect x="11" y="27" width="6" height="3" fill="#3a2000"/></svg>`,
 `<svg width="20" height="30" viewBox="0 0 20 30" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="5" y="0" width="10" height="2" fill="#2d7a1f"/><rect x="4" y="2" width="12" height="2" fill="#2d7a1f"/><rect x="3" y="4" width="14" height="3" fill="#3a9e28"/><rect x="13" y="1" width="4" height="2" fill="#2d7a1f"/><rect x="4" y="7" width="12" height="8" fill="#f5c27a"/><rect x="6" y="9" width="2" height="2" fill="#1a0a00"/><rect x="12" y="9" width="2" height="2" fill="#1a0a00"/><rect x="2" y="9" width="2" height="3" fill="#f5c27a"/><rect x="16" y="9" width="2" height="3" fill="#f5c27a"/><rect x="1" y="8" width="2" height="2" fill="#f5c27a"/><rect x="17" y="8" width="2" height="2" fill="#f5c27a"/><rect x="3" y="15" width="14" height="9" fill="#3a9e28"/><rect x="3" y="22" width="14" height="2" fill="#8B5e1a"/><rect x="0" y="16" width="3" height="6" fill="#cc2200"/><rect x="1" y="17" width="1" height="4" fill="#f5c27a"/><rect x="17" y="14" width="3" height="7" fill="#3a9e28"/><rect x="17" y="21" width="3" height="2" fill="#f5c27a"/><rect x="19" y="6" width="2" height="10" fill="#c0c0c0"/><rect x="17" y="13" width="4" height="2" fill="#c8960c"/><rect x="4" y="24" width="5" height="4" fill="#8B5e1a"/><rect x="11" y="24" width="5" height="4" fill="#8B5e1a"/><rect x="3" y="27" width="6" height="3" fill="#3a2000"/><rect x="11" y="28" width="6" height="2" fill="#3a2000"/></svg>`
@@ -89,7 +91,7 @@ const STORAGE_KEY='sillage_collection_v1';
 const loadCollection=()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');}catch{return [];}};
 const saveCollection=(arr)=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(arr));}catch{}};
 
-/* ─── SPRITE CANVAS (unchanged) ─── */
+/* ─── SPRITE CANVAS ─── */
 function SpriteCanvas(){
   const containerRef=useRef(null);
   const sRef=useRef({linkX:100,linkFacing:1,linkFrame:0,fairyFrame:0,fairyT:0,fairyX:0,fairyY:0,linkTop:0,mist:[],sparks:[],width:800,height:600});
@@ -124,7 +126,7 @@ function SpriteCanvas(){
   );
 }
 
-/* ─── DIAGONAL REVEAL (unchanged) ─── */
+/* ─── DIAGONAL REVEAL ─── */
 function DiagonalReveal({onComplete}){
   const [phase,setPhase]=useState(0);
   useEffect(()=>{const t1=setTimeout(()=>setPhase(1),100),t2=setTimeout(()=>{setPhase(2);onComplete();},1800);return()=>{clearTimeout(t1);clearTimeout(t2);};},[]);
@@ -136,9 +138,13 @@ function DiagonalReveal({onComplete}){
   );
 }
 
-/* ─── NOTES CHART (unchanged) ─── */
+/* ─── NOTES CHART ─── */
 function NotesChart({notes}){
-  const rows=[{label:"Top Notes",icon:"✦",data:notes?.top,color:"#7ecfee"},{label:"Mid Notes",icon:"❋",data:notes?.mid,color:"#4a90d9"},{label:"Base Notes",icon:"◈",data:notes?.base,color:"#2558a8"}];
+  const rows=[
+    {label:"Top Notes",icon:"✦",data:notes?.top,color:"#7ecfee"},
+    {label:"Mid Notes",icon:"❋",data:notes?.mid,color:"#4a90d9"},
+    {label:"Base Notes",icon:"◈",data:notes?.base,color:"#2558a8"}
+  ];
   return h('div',{style:{border:"1px solid rgba(58,155,213,0.3)",borderRadius:12,overflow:"hidden",marginTop:16}},
     ...rows.map((r,i)=>h('div',{key:i,style:{display:"flex",alignItems:"center",gap:16,padding:"14px 20px",background:i%2===0?"rgba(255,255,255,0.03)":"rgba(0,0,0,0.2)",borderBottom:i<2?"1px solid rgba(58,155,213,0.15)":"none"}},
       h('span',{style:{color:r.color,fontSize:18,width:20,textAlign:"center"}},r.icon),
@@ -148,7 +154,7 @@ function NotesChart({notes}){
   );
 }
 
-/* ─── SECTION WRAPPER (unchanged) ─── */
+/* ─── SECTION WRAPPER ─── */
 function Section({title,icon,children}){
   return h('div',{style:{marginTop:28,padding:"24px 28px",background:"rgba(10,30,60,0.5)",border:"1px solid rgba(58,155,213,0.2)",borderRadius:14,animation:"fadeSlideUp 0.5s ease both"}},
     h('div',{style:{display:"flex",alignItems:"center",gap:10,marginBottom:14}},
@@ -171,12 +177,16 @@ function StatusBadge({status,label}){
 function LandmarkImage({name}){
   const [err,setErr]=useState(false);
   const seed=encodeURIComponent((name||"landmark").slice(0,30));
-  return h('img',{src:err?`https://picsum.photos/400/250`:`https://picsum.photos/seed/${seed}/400/250`,alt:name,style:{width:"100%",maxWidth:360,borderRadius:10,objectFit:"cover",border:"1px solid rgba(58,155,213,0.3)"},onError:()=>setErr(true)});
+  return h('img',{
+    src:err?`https://picsum.photos/400/250`:`https://picsum.photos/seed/${seed}/400/250`,
+    alt:name,
+    style:{width:"100%",maxWidth:360,borderRadius:10,objectFit:"cover",border:"1px solid rgba(58,155,213,0.3)"},
+    onError:()=>setErr(true)
+  });
 }
 
 /* ─── HALF-STAR RATING ─── */
 function HalfStarRating({value,onChange}){
-  // value: 0–5 in 0.5 steps. 5 stars, each split left/right half.
   const [hover,setHover]=useState(null);
   const display=hover!==null?hover:value;
 
@@ -192,7 +202,7 @@ function HalfStarRating({value,onChange}){
     const x=e.clientX-rect.left;
     const half=x<rect.width/2;
     const val=half?starIdx-0.5:starIdx;
-    onChange(val===value?0:val); // tap same value to clear
+    onChange(val===value?0:val);
   };
 
   return h('div',{style:{display:"flex",alignItems:"center",gap:4}},
@@ -205,9 +215,7 @@ function HalfStarRating({value,onChange}){
         onClick:(e)=>handleClick(i,e),
         style:{cursor:"pointer",fontSize:32,lineHeight:1,position:"relative",width:36,height:36,display:"flex",alignItems:"center",justifyContent:"center",userSelect:"none"}
       },
-        // Empty star (background)
         h('span',{style:{position:"absolute",color:"rgba(58,155,213,0.2)"},dangerouslySetInnerHTML:{__html:"★"}}),
-        // Full or half fill
         filled==='full'&&h('span',{style:{position:"absolute",color:"#7ecfee",filter:"drop-shadow(0 0 6px rgba(126,207,238,0.8))"},dangerouslySetInnerHTML:{__html:"★"}}),
         filled==='half'&&h('span',{style:{position:"absolute",color:"transparent",backgroundImage:"linear-gradient(90deg,#7ecfee 50%,transparent 50%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",filter:"drop-shadow(0 0 4px rgba(126,207,238,0.6))"},dangerouslySetInnerHTML:{__html:"★"}})
       );
@@ -220,7 +228,12 @@ function HalfStarRating({value,onChange}){
 
 /* ─── NOTE CHIP ─── */
 function NoteChip({label,layer,active,onToggle}){
-  const layerColors={top:{bg:"rgba(126,207,238,0.12)",border:"rgba(126,207,238,0.5)",text:"#7ecfee",dot:"#7ecfee"},mid:{bg:"rgba(74,144,217,0.12)",border:"rgba(74,144,217,0.5)",text:"#4a90d9",dot:"#4a90d9"},base:{bg:"rgba(37,88,168,0.12)",border:"rgba(37,88,168,0.5)",text:"#6699cc",dot:"#5577bb"},vibe:{bg:"rgba(180,120,255,0.1)",border:"rgba(180,120,255,0.45)",text:"#c09af0",dot:"#c09af0"}};
+  const layerColors={
+    top:{bg:"rgba(126,207,238,0.12)",border:"rgba(126,207,238,0.5)",text:"#7ecfee",dot:"#7ecfee"},
+    mid:{bg:"rgba(74,144,217,0.12)",border:"rgba(74,144,217,0.5)",text:"#4a90d9",dot:"#4a90d9"},
+    base:{bg:"rgba(37,88,168,0.12)",border:"rgba(37,88,168,0.5)",text:"#6699cc",dot:"#5577bb"},
+    vibe:{bg:"rgba(180,120,255,0.1)",border:"rgba(180,120,255,0.45)",text:"#c09af0",dot:"#c09af0"}
+  };
   const c=layerColors[layer]||layerColors.top;
   return h('button',{
     onClick:onToggle,
@@ -249,7 +262,6 @@ function ScentLogger({name,notes,vibe,onSaved}){
   const [saved,setSaved]=useState(false);
   const [copied,setCopied]=useState(false);
 
-  // Parse note strings into arrays
   const parseNotes=(str)=>str?str.split(',').map(s=>s.trim()).filter(Boolean):[];
   const topNotes=parseNotes(notes?.top);
   const midNotes=parseNotes(notes?.mid);
@@ -262,7 +274,7 @@ function ScentLogger({name,notes,vibe,onSaved}){
   });
 
   const buildNotesText=()=>{
-    const chips=[...activeChips].join(", ");
+    const chips=[...activeChips].filter(c=>c!=='__vibe__').join(", ");
     const parts=[];
     if(chips) parts.push(chips);
     if(freeNotes.trim()) parts.push(freeNotes.trim());
@@ -280,7 +292,6 @@ function ScentLogger({name,notes,vibe,onSaved}){
       date:new Date().toISOString()
     };
     const col=loadCollection();
-    // Replace if same name exists
     const idx=col.findIndex(e=>e.name.toLowerCase()===name.toLowerCase());
     if(idx>=0)col[idx]=entry;else col.unshift(entry);
     saveCollection(col);
@@ -297,51 +308,45 @@ function ScentLogger({name,notes,vibe,onSaved}){
   };
 
   return h('div',{style:{marginTop:28,padding:"24px 28px",background:"rgba(10,20,50,0.65)",border:"1px solid rgba(126,207,238,0.25)",borderRadius:14,animation:"fadeSlideUp 0.5s ease both"}},
-    // Header
+
     h('div',{style:{display:"flex",alignItems:"center",gap:10,marginBottom:20}},
       h('span',{style:{fontSize:20}},"📝"),
-      h('h3',{style:{margin:0,color:"#7ecfee",fontSize:15,letterSpacing:2,textTransform:"uppercase",fontWeight:700}}),"Log This Scent"
+      h('h3',{style:{margin:0,color:"#7ecfee",fontSize:15,letterSpacing:2,textTransform:"uppercase",fontWeight:700}},"Log This Scent")
     ),
 
-    // Rating
     h('div',{style:{marginBottom:22}},
       h('p',{style:{color:"rgba(126,207,238,0.55)",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:10}},"Your Rating"),
       h(HalfStarRating,{value:rating,onChange:setRating})
     ),
 
-    // Top note chips
     topNotes.length>0&&h('div',{style:{marginBottom:14}},
-      h('p',{style:{color:"#7ecfee",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}}),"✦ Top Notes",
+      h('p',{style:{color:"#7ecfee",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}},"✦ Top Notes"),
       h('div',{style:{display:"flex",flexWrap:"wrap",gap:8}},
         topNotes.map(n=>h(NoteChip,{key:n,label:n,layer:"top",active:activeChips.has(n),onToggle:()=>toggleChip(n)}))
       )
     ),
 
-    // Mid note chips
     midNotes.length>0&&h('div',{style:{marginBottom:14}},
-      h('p',{style:{color:"#4a90d9",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}}),"❋ Mid Notes",
+      h('p',{style:{color:"#4a90d9",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}},"❋ Mid Notes"),
       h('div',{style:{display:"flex",flexWrap:"wrap",gap:8}},
         midNotes.map(n=>h(NoteChip,{key:n,label:n,layer:"mid",active:activeChips.has(n),onToggle:()=>toggleChip(n)}))
       )
     ),
 
-    // Base / Dry Down chips
     baseNotes.length>0&&h('div',{style:{marginBottom:16}},
-      h('p',{style:{color:"#6699cc",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}}),"◈ Dry Down",
+      h('p',{style:{color:"#6699cc",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}},"◈ Dry Down"),
       h('div',{style:{display:"flex",flexWrap:"wrap",gap:8}},
         baseNotes.map(n=>h(NoteChip,{key:n,label:n,layer:"base",active:activeChips.has(n),onToggle:()=>toggleChip(n)}))
       )
     ),
 
-    // Vibe sentence
     vibe&&h('div',{style:{marginBottom:18}},
-      h('p',{style:{color:"#c09af0",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}}),"✧ Vibe",
+      h('p',{style:{color:"#c09af0",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}},"✧ Vibe"),
       h(NoteChip,{label:vibe,layer:"vibe",active:activeChips.has('__vibe__'),onToggle:()=>toggleChip('__vibe__')})
     ),
 
-    // Free notes
     h('div',{style:{marginBottom:20}},
-      h('p',{style:{color:"rgba(126,207,238,0.55)",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}}),"Personal Notes",
+      h('p',{style:{color:"rgba(126,207,238,0.55)",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:8}},"Personal Notes"),
       h('textarea',{
         value:freeNotes,
         onChange:e=>setFreeNotes(e.target.value),
@@ -351,13 +356,11 @@ function ScentLogger({name,notes,vibe,onSaved}){
           width:"100%",padding:"14px 16px",
           background:"rgba(4,12,28,0.8)",color:"#c8dff5",
           border:"1px solid rgba(58,155,213,0.3)",borderRadius:10,
-          fontSize:14,fontFamily:"Georgia,serif",lineHeight:1.7,
-          letterSpacing:0.4
+          fontSize:14,fontFamily:"Georgia,serif",lineHeight:1.7,letterSpacing:0.4
         }
       })
     ),
 
-    // Action buttons
     h('div',{style:{display:"flex",gap:12,flexWrap:"wrap"}},
       h('button',{
         onClick:handleSave,
@@ -391,7 +394,7 @@ function CollectionView(){
   const [col,setCol]=useState([]);
   const [search,setSearch]=useState("");
   const [expanded,setExpanded]=useState(null);
-  const [sortBy,setSortBy]=useState("date"); // "date" | "rating" | "name"
+  const [sortBy,setSortBy]=useState("date");
 
   useEffect(()=>{setCol(loadCollection());},[]);
 
@@ -418,13 +421,12 @@ function CollectionView(){
   };
 
   if(col.length===0)return h('div',{style:{textAlign:"center",padding:"80px 24px"}},
-    h('p',{style:{fontSize:32,marginBottom:16}}),"⚗️",
-    h('p',{style:{color:"rgba(126,207,238,0.4)",letterSpacing:3,textTransform:"uppercase",fontSize:13}}),"Your collection is empty",
-    h('p',{style:{color:"rgba(126,207,238,0.25)",fontSize:12,marginTop:8,letterSpacing:1}}),"Analyze a fragrance and log it to start"
+    h('p',{style:{fontSize:32,marginBottom:16}},"⚗️"),
+    h('p',{style:{color:"rgba(126,207,238,0.4)",letterSpacing:3,textTransform:"uppercase",fontSize:13}},"Your collection is empty"),
+    h('p',{style:{color:"rgba(126,207,238,0.25)",fontSize:12,marginTop:8,letterSpacing:1}},"Analyze a fragrance and log it to start")
   );
 
   return h('div',{style:{paddingTop:16}},
-    // Search + sort bar
     h('div',{style:{display:"flex",gap:12,marginBottom:24,flexWrap:"wrap"}},
       h('input',{
         value:search,onChange:e=>setSearch(e.target.value),
@@ -441,12 +443,10 @@ function CollectionView(){
       )
     ),
 
-    // Count
     h('p',{style:{color:"rgba(126,207,238,0.35)",fontSize:11,letterSpacing:3,textTransform:"uppercase",marginBottom:16}},
       `${filtered.length} fragrance${filtered.length!==1?"s":""} logged`
     ),
 
-    // Cards
     h('div',{style:{display:"flex",flexDirection:"column",gap:12}},
       filtered.map(entry=>{
         const isOpen=expanded===entry.id;
@@ -457,13 +457,9 @@ function CollectionView(){
             borderRadius:12,overflow:"hidden",transition:"border-color 0.2s ease"
           }
         },
-          // Card header
           h('div',{
             onClick:()=>setExpanded(isOpen?null:entry.id),
-            style:{
-              display:"flex",alignItems:"center",justifyContent:"space-between",
-              padding:"16px 20px",cursor:"pointer",gap:12
-            }
+            style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 20px",cursor:"pointer",gap:12}
           },
             h('div',{style:{flex:1,minWidth:0}},
               h('p',{style:{color:"#a8d8f0",fontSize:15,fontWeight:700,letterSpacing:1,marginBottom:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},entry.name),
@@ -471,14 +467,13 @@ function CollectionView(){
             ),
             h('div',{style:{display:"flex",alignItems:"center",gap:10,flexShrink:0}},
               h('span',{style:{color:"rgba(126,207,238,0.3)",fontSize:11}},new Date(entry.date).toLocaleDateString()),
-              h('span',{style:{color:"rgba(126,207,238,0.4)",fontSize:16,transition:"transform 0.2s ease",transform:isOpen?"rotate(180deg)":"rotate(0deg)"}}),"▾"
+              h('span',{style:{color:"rgba(126,207,238,0.4)",fontSize:16,transition:"transform 0.2s ease",transform:isOpen?"rotate(180deg)":"rotate(0deg)"}},"▾")
             )
           ),
 
-          // Expanded detail
           isOpen&&h('div',{style:{padding:"0 20px 20px",borderTop:"1px solid rgba(58,155,213,0.12)"}},
             entry.chips?.length>0&&h('div',{style:{marginTop:14,marginBottom:12}},
-              h('p',{style:{color:"rgba(126,207,238,0.4)",fontSize:11,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}),"Noted",
+              h('p',{style:{color:"rgba(126,207,238,0.4)",fontSize:11,letterSpacing:2,textTransform:"uppercase",marginBottom:8}},"Noted"),
               h('div',{style:{display:"flex",flexWrap:"wrap",gap:6}},
                 entry.chips.filter(c=>c!=='__vibe__').map(c=>h('span',{key:c,style:{padding:"4px 12px",borderRadius:16,background:"rgba(58,155,213,0.1)",border:"1px solid rgba(58,155,213,0.25)",color:"#7ecfee",fontSize:12}},c))
               )
@@ -487,7 +482,7 @@ function CollectionView(){
               h('p',{style:{color:"#c09af0",fontSize:13,fontStyle:"italic",lineHeight:1.6}},`"${entry.vibe}"`)
             ),
             entry.notes&&h('div',{style:{marginTop:12}},
-              h('p',{style:{color:"rgba(126,207,238,0.4)",fontSize:11,letterSpacing:2,textTransform:"uppercase",marginBottom:6}}),"Notes",
+              h('p',{style:{color:"rgba(126,207,238,0.4)",fontSize:11,letterSpacing:2,textTransform:"uppercase",marginBottom:6}},"Notes"),
               h('p',{style:{color:"#c8dff5",fontSize:13,lineHeight:1.7,whiteSpace:"pre-wrap"}},entry.notes)
             ),
             h('button',{
@@ -503,7 +498,10 @@ function CollectionView(){
 
 /* ─── TAB NAV ─── */
 function TabNav({active,onChange,collectionCount}){
-  const tabs=[{id:"analyzer",label:"Oracle",icon:"⚗️"},{id:"collection",label:`Collection${collectionCount>0?" ("+collectionCount+")":""}`,icon:"✦"}];
+  const tabs=[
+    {id:"analyzer",label:"Oracle",icon:"⚗️"},
+    {id:"collection",label:`Collection${collectionCount>0?" ("+collectionCount+")":""}`,icon:"✦"}
+  ];
   return h('div',{style:{position:"sticky",top:0,zIndex:30,background:"rgba(4,8,15,0.92)",backdropFilter:"blur(16px)",borderBottom:"1px solid rgba(58,155,213,0.15)",padding:"0 24px"}},
     h('div',{style:{maxWidth:760,margin:"0 auto",display:"flex",gap:0}},
       tabs.map(t=>h('button',{
@@ -524,8 +522,19 @@ function TabNav({active,onChange,collectionCount}){
 
 /* ─── API HELPERS ─── */
 const callAPI=async(prompt)=>{
-  const res=await fetch("/.netlify/functions/sillage-proxy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:2048,messages:[{role:"user",content:prompt}]})});
-  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`API error ${res.status}`);}
+  const res=await fetch("/.netlify/functions/sillage-proxy",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-6",
+      max_tokens:2048,
+      messages:[{role:"user",content:prompt}]
+    })
+  });
+  if(!res.ok){
+    const e=await res.json().catch(()=>({}));
+    throw new Error(e?.error?.message||`API error ${res.status}`);
+  }
   const data=await res.json();
   const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim();
   const m=text.match(/\{[\s\S]*\}/);
@@ -555,55 +564,98 @@ function App(){
     if(!fragrance.trim())return;
     setLoading(true);setError("");setSections({});setConfirmedName("");setStepStatus({});
     try{
-      let resolved={fragrance_full_name:fragrance.trim(),house:"",country:""};
-
-      setConfirmedName(resolved.fragrance_full_name||fragrance.trim());
+      setConfirmedName(fragrance.trim());
       setTimeout(()=>resultRef.current?.scrollIntoView({behavior:"smooth"}),100);
       setStep("Analyzing fragrance","active");
 
-      const n=resolved.fragrance_full_name,ho=resolved.house,co=resolved.country;
+      const name=fragrance.trim();
 
-      const [meta,creative,geo,vibe]=await Promise.all([
-        callAPI(`You are a fragrance expert. For "${n}" by ${ho} from ${co}. Return ONLY valid JSON (no markdown): {"origin":"One sentence: when founded, where, and the creative vision.","notes":{"top":"comma-separated top notes","mid":"comma-separated mid notes","base":"comma-separated base notes"},"description":"Three paragraphs of rich evocative description. Use \\n\\n between paragraphs."}`),
-        callAPI(`You are a creative writer. For "${n}" from ${co}. Return ONLY valid JSON (no markdown): {"marvel":"2-3 sentences: specific X-Men or Marvel character scene WITHOUT mentioning smell or scent.","videogame":"2-3 sentences: specific video game character scene WITHOUT mentioning smell or scent. Name the game.","popdiva":{"artist":"pop diva name","song":"exact real song title","description":"2-3 sentences associating the song mood with this fragrance. No smell references."}}`),
-        callAPI(`You are a travel and fragrance expert. For "${n}" from ${co}. Return ONLY valid JSON (no markdown): {"landmark":{"landmark_name":"exact real famous world landmark","wiki_title":"exact Wikipedia article title","country":"country","description":"2-3 sentences on why this landmark matches this fragrance."}}`),
-        callAPI(`You are a fragrance poet. For "${n}". Return ONLY valid JSON (no markdown): {"vibe":"One vivid evocative scenario sentence (20-35 words) describing the feeling and world of this fragrance, like 'Feels like walking through a Nordic pine forest at dusk with a warm cabin fireplace glowing through frosted windows.' Make it specific and sensory but never mention the word scent or smell."}`)
+      const [meta,creative,geo,prose]=await Promise.all([
+
+        // 1. Origin, notes, description
+        callAPI(`You are a fragrance expert. For the fragrance "${name}". Return ONLY valid JSON with no markdown fences:
+{
+  "origin": "2-3 sentences covering the perfume house background and the specific creative inspiration behind this fragrance.",
+  "notes": {
+    "top": "comma-separated top notes",
+    "mid": "comma-separated mid notes",
+    "base": "comma-separated base notes"
+  },
+  "description": "Three rich evocative paragraphs describing the scent experience. Separate paragraphs with \\n\\n."
+}`),
+
+        // 2. Marvel/X-Men vignette + Video game vignette + Pop Diva
+        callAPI(`You are a creative writer. For the fragrance "${name}". Return ONLY valid JSON with no markdown fences:
+{
+  "marvel": "2-3 sentences placing a specific Marvel or X-Men character in a single concrete scene that conveys the emotional and atmospheric experience of this fragrance. Do NOT mention smell, scent, or fragrance. Be specific about the character, location, and action. Rotate characters — avoid using Wolverine or Storm unless the fragrance strongly demands it.",
+  "videogame": "2-3 sentences placing a specific video game character in a concrete scene that conveys the experience of this fragrance. Do NOT mention smell, scent, or fragrance. Name the character and the game. Be specific about the setting and moment.",
+  "popdiva": {
+    "artist": "name of a real pop diva (female artist) whose persona and music era fits this fragrance",
+    "song": "exact title of one real song by that artist that matches the mood",
+    "description": "2-3 sentences associating the mood and world of that song with this fragrance. No smell or scent references."
+  }
+}`),
+
+        // 3. Real-world tourist landmark
+        callAPI(`You are a travel and fragrance expert. For the fragrance "${name}". Return ONLY valid JSON with no markdown fences:
+{
+  "landmark": {
+    "landmark_name": "the exact name of a real, famous world tourist landmark (one of the most visited in the world)",
+    "wiki_title": "exact Wikipedia article title for this landmark",
+    "country": "country where the landmark is located",
+    "description": "2-3 sentences explaining why this specific landmark captures the spirit and character of this fragrance. Be concrete and evocative."
+  }
+}`),
+
+        // 4. Vibe chip sentence
+        callAPI(`You are a fragrance poet. For the fragrance "${name}". Return ONLY valid JSON with no markdown fences:
+{
+  "vibe": "One vivid evocative scenario sentence (20-35 words) describing the feeling and world of this fragrance. Make it specific and sensory but never use the words scent or smell."
+}`)
+
       ]);
 
-      const full={...meta,...creative,...geo,...vibe};
-      if(full.landmark?.wiki_title){const wt=encodeURIComponent(full.landmark.wiki_title.replace(/ /g,"_"));full.landmark.wiki_url=`https://en.wikipedia.org/wiki/${wt}`;}
+      const full={...meta,...creative,...geo,...prose};
+      if(full.landmark?.wiki_title){
+        const wt=encodeURIComponent(full.landmark.wiki_title.replace(/ /g,"_"));
+        full.landmark.wiki_url=`https://en.wikipedia.org/wiki/${wt}`;
+      }
       setSections(full);
       setStep("Analyzing fragrance","done");
       setTimeout(()=>loggerRef.current?.scrollIntoView({behavior:"smooth",block:"start"}),400);
-    }catch(e){console.error(e);setError(`Something went wrong: ${e.message}`);}
+    }catch(e){
+      console.error(e);
+      setError(`Something went wrong: ${e.message}`);
+    }
     setLoading(false);
   };
 
-  const handleSaved=(entry)=>{
-    setCollectionCount(loadCollection().length);
-  };
+  const handleSaved=()=>{setCollectionCount(loadCollection().length);};
 
   const sec=sections,hasAny=Object.keys(sec).length>0,steps=Object.entries(stepStatus);
   const txt=(t,s={})=>h('p',{style:{color:"#c8dff5",lineHeight:1.8,margin:0,...s}},t);
 
   return h('div',{style:{minHeight:"100vh",background:"#04080f",color:"#e8f4ff",fontFamily:"Georgia,serif",position:"relative",overflow:"hidden"}},
-    // Backgrounds
+
+    /* backgrounds */
     h('div',{style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",backgroundImage:"url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1600&q=80')",backgroundSize:"cover",backgroundPosition:"center bottom",opacity:.28,zIndex:0}}),
     h('div',{style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",backgroundImage:"url('https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?w=1600&q=80')",backgroundSize:"cover",backgroundPosition:"center top",opacity:.18,zIndex:0,mixBlendMode:"screen"}}),
     h('div',{style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",backgroundImage:"linear-gradient(rgba(58,155,213,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(58,155,213,0.05) 1px,transparent 1px)",backgroundSize:"48px 48px",zIndex:1}}),
     h('div',{style:{position:"fixed",top:0,left:0,width:"100%",height:"100%",background:"radial-gradient(ellipse at center,transparent 35%,rgba(2,5,15,0.9) 100%)",zIndex:2}}),
+
     h(DiagonalReveal,{onComplete:()=>setRevealed(true)}),
     h(SpriteCanvas,null),
 
-    // Tab nav
+    /* tab nav */
     revealed&&h(TabNav,{active:tab,onChange:setTab,collectionCount}),
 
-    // Content
+    /* main content */
     h('div',{style:{position:"relative",zIndex:10,maxWidth:760,margin:"0 auto",padding:"0 24px 120px"}},
 
-      // ── ANALYZER TAB ──
+      /* ── ANALYZER TAB ── */
       tab==="analyzer"&&h(Fragment,null,
-        // Hero
+
+        /* hero */
         h('div',{style:{minHeight:"90vh",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",textAlign:"center",opacity:revealed?1:0,transition:"opacity 0.8s ease 0.3s"}},
           h('div',{style:{animation:"float 4s ease-in-out infinite"}},
             h('p',{style:{color:"rgba(126,207,238,0.55)",fontSize:11,letterSpacing:6,textTransform:"uppercase",margin:"0 0 12px 0"}},"✦ FRAGRANCE ORACLE ✦"),
@@ -612,9 +664,18 @@ function App(){
           ),
           h('p',{style:{color:"rgba(126,207,238,0.45)",fontSize:13,letterSpacing:2,marginBottom:40,textTransform:"uppercase"}},"Enter a fragrance. Begin the journey."),
           h('div',{style:{display:"flex",width:"100%",maxWidth:520}},
-            h('input',{value:fragrance,onChange:e=>{setFragrance(e.target.value);setError("");},onKeyDown:e=>e.key==="Enter"&&!loading&&analyze(),placeholder:"e.g. Bleu de Chanel, Black Orchid...",style:{flex:1,padding:"18px 24px",fontSize:15,background:"rgba(4,12,28,0.9)",color:"#e8f4ff",border:"1px solid rgba(58,155,213,0.35)",borderRight:"none",borderRadius:"10px 0 0 10px",letterSpacing:1,fontFamily:"Georgia,serif"}}),
-            h('button',{onClick:analyze,disabled:loading||!fragrance.trim(),style:{padding:"18px 28px",fontSize:13,letterSpacing:2,background:loading?"rgba(58,155,213,0.2)":"linear-gradient(135deg,#1e56a0,#3a9bd5)",color:"#e8f4ff",border:"1px solid rgba(58,155,213,0.5)",borderRadius:"0 10px 10px 0",cursor:loading?"default":"pointer",textTransform:"uppercase",fontFamily:"Georgia,serif",transition:"all 0.3s ease",whiteSpace:"nowrap",animation:loading?"revealPulse 1.2s ease-in-out infinite":"none"}},
-              loading?(stepStatus["Identifying fragrance"]==="done"?"✦ Analyzing...":"✦ Searching..."):"✦ Reveal")
+            h('input',{
+              value:fragrance,
+              onChange:e=>{setFragrance(e.target.value);setError("");},
+              onKeyDown:e=>e.key==="Enter"&&!loading&&analyze(),
+              placeholder:"e.g. Bleu de Chanel, Black Orchid...",
+              style:{flex:1,padding:"18px 24px",fontSize:15,background:"rgba(4,12,28,0.9)",color:"#e8f4ff",border:"1px solid rgba(58,155,213,0.35)",borderRight:"none",borderRadius:"10px 0 0 10px",letterSpacing:1,fontFamily:"Georgia,serif"}
+            }),
+            h('button',{
+              onClick:analyze,
+              disabled:loading||!fragrance.trim(),
+              style:{padding:"18px 28px",fontSize:13,letterSpacing:2,background:loading?"rgba(58,155,213,0.2)":"linear-gradient(135deg,#1e56a0,#3a9bd5)",color:"#e8f4ff",border:"1px solid rgba(58,155,213,0.5)",borderRadius:"0 10px 10px 0",cursor:loading?"default":"pointer",textTransform:"uppercase",fontFamily:"Georgia,serif",transition:"all 0.3s ease",whiteSpace:"nowrap",animation:loading?"revealPulse 1.2s ease-in-out infinite":"none"}
+            },loading?"✦ Analyzing...":"✦ Reveal")
           ),
           error&&h('p',{style:{color:"#e74c3c",marginTop:16,fontSize:13,maxWidth:520,textAlign:"center"}},`⚠ ${error}`),
           loading&&steps.length>0&&h('div',{style:{marginTop:24,maxWidth:300}},
@@ -622,31 +683,39 @@ function App(){
           )
         ),
 
-        // Results
+        /* results */
         h('div',{ref:resultRef},
           hasAny&&h('div',null,
+
             h('div',{style:{textAlign:"center",marginBottom:32,paddingTop:8,animation:"fadeSlideUp 0.4s ease both"}},
               h('p',{style:{color:"rgba(126,207,238,0.45)",fontSize:11,letterSpacing:4,textTransform:"uppercase",margin:"0 0 6px 0"}},"✦ confirmed fragrance ✦"),
-              h('h2',{style:{fontSize:"clamp(1.2rem,3.5vw,1.8rem)",fontWeight:400,letterSpacing:3,background:"linear-gradient(135deg,#a8d8f0,#3a9bd5)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"0 0 10px 0"}},confirmedName,loading&&h('span',{style:{animation:"blink 1s infinite",marginLeft:4}},"|")),
+              h('h2',{style:{fontSize:"clamp(1.2rem,3.5vw,1.8rem)",fontWeight:400,letterSpacing:3,background:"linear-gradient(135deg,#a8d8f0,#3a9bd5)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",margin:"0 0 10px 0"}},
+                confirmedName,
+                loading&&h('span',{style:{animation:"blink 1s infinite",marginLeft:4}},"|")
+              ),
               h('div',{style:{height:1,background:"linear-gradient(90deg,transparent,rgba(58,155,213,0.5),transparent)"}})
             ),
 
-            sec.origin&&h(Section,{title:"Origin Story",icon:"📜"},txt(sec.origin)),
-            sec.notes&&h(Section,{title:"Scent Notes",icon:"⚗️"},h(NotesChart,{notes:sec.notes})),
-            sec.description&&h(Section,{title:"Fragrance Description",icon:"🌫️"},txt(sec.description,{whiteSpace:"pre-wrap"})),
-            sec.marvel&&h(Section,{title:"Marvel / X-Men Vignette",icon:"⚡"},txt(sec.marvel)),
-            sec.videogame&&h(Section,{title:"Video Game Vignette",icon:"🎮"},txt(sec.videogame)),
-            sec.landmark&&h(Section,{title:"Tourist Landmark",icon:"🗺️"},
-              txt(sec.landmark.description,{margin:"0 0 14px 0"}),
-              h('div',{style:{display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}},
-                h(LandmarkImage,{name:sec.landmark.landmark_name}),
-                h('div',null,
-                  h('p',{style:{color:"#7ecfee",fontWeight:700,fontSize:16,margin:"0 0 4px 0"}},sec.landmark.landmark_name),
-                  h('p',{style:{color:"#aac4e0",fontSize:13,margin:"0 0 10px 0"}},sec.landmark.country),
-                  sec.landmark.wiki_url&&h('a',{href:sec.landmark.wiki_url,target:"_blank",rel:"noreferrer",style:{display:"inline-block",padding:"8px 16px",background:"rgba(58,155,213,0.15)",border:"1px solid rgba(58,155,213,0.4)",borderRadius:8,color:"#7ecfee",textDecoration:"none",fontSize:13,letterSpacing:1}},"Wikipedia ↗")
-                )
-              )
+            sec.origin&&h(Section,{title:"House & Inspiration",icon:"📜"},
+              txt(sec.origin)
             ),
+
+            sec.notes&&h(Section,{title:"Scent Notes",icon:"⚗️"},
+              h(NotesChart,{notes:sec.notes})
+            ),
+
+            sec.description&&h(Section,{title:"Fragrance Description",icon:"🌫️"},
+              txt(sec.description,{whiteSpace:"pre-wrap"})
+            ),
+
+            sec.marvel&&h(Section,{title:"Marvel / X-Men Vignette",icon:"⚡"},
+              txt(sec.marvel)
+            ),
+
+            sec.videogame&&h(Section,{title:"Video Game Vignette",icon:"🎮"},
+              txt(sec.videogame)
+            ),
+
             sec.popdiva&&h(Section,{title:"Pop Diva Anthem",icon:"🎤"},
               h('div',{style:{display:"flex",alignItems:"center",gap:12,marginBottom:12,flexWrap:"wrap"}},
                 h('div',{style:{padding:"6px 14px",background:"rgba(58,155,213,0.15)",border:"1px solid rgba(58,155,213,0.3)",borderRadius:20}},
@@ -658,7 +727,22 @@ function App(){
               txt(sec.popdiva.description)
             ),
 
-            // ── SCENT LOGGER ──
+            sec.landmark&&h(Section,{title:"If This Were a Tourist Landmark",icon:"🗺️"},
+              txt(sec.landmark.description,{margin:"0 0 14px 0"}),
+              h('div',{style:{display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}},
+                h(LandmarkImage,{name:sec.landmark.landmark_name}),
+                h('div',null,
+                  h('p',{style:{color:"#7ecfee",fontWeight:700,fontSize:16,margin:"0 0 4px 0"}},sec.landmark.landmark_name),
+                  h('p',{style:{color:"#aac4e0",fontSize:13,margin:"0 0 10px 0"}},sec.landmark.country),
+                  sec.landmark.wiki_url&&h('a',{
+                    href:sec.landmark.wiki_url,target:"_blank",rel:"noreferrer",
+                    style:{display:"inline-block",padding:"8px 16px",background:"rgba(58,155,213,0.15)",border:"1px solid rgba(58,155,213,0.4)",borderRadius:8,color:"#7ecfee",textDecoration:"none",fontSize:13,letterSpacing:1}
+                  },"Wikipedia ↗")
+                )
+              )
+            ),
+
+            /* scent logger */
             h('div',{ref:loggerRef},
               h(ScentLogger,{
                 name:confirmedName,
@@ -671,7 +755,7 @@ function App(){
         )
       ),
 
-      // ── COLLECTION TAB ──
+      /* ── COLLECTION TAB ── */
       tab==="collection"&&h('div',{style:{paddingTop:40,opacity:revealed?1:0,transition:"opacity 0.5s ease"}},
         h('div',{style:{textAlign:"center",marginBottom:32}},
           h('p',{style:{color:"rgba(126,207,238,0.45)",fontSize:11,letterSpacing:4,textTransform:"uppercase",margin:"0 0 6px 0"}},"✦ YOUR SILLAGE ✦"),
@@ -680,6 +764,7 @@ function App(){
         ),
         h(CollectionView,null)
       )
+
     )
   );
 }
